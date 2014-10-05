@@ -26,7 +26,7 @@
 |_| \_|\___/|___/\___\___/| .__/ \___| |_| \_|_|\__,_|\__,_|_|\___|\___|
                           | |                                           
                           |_| 
-                          
+                         
 ]]
 if not VIP_USER then
     PrintChat(">> VIP Authentication Failed! You are not authorised to run this script. Unloading.<<")
