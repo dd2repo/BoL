@@ -49,6 +49,7 @@ RequireI:Check()
 if AUTOUPDATE then
      SourceUpdater(SCRIPT_NAME, version, "raw.github.com", "/dd2repo/BoL/master/"..SCRIPT_NAME..".lua", SCRIPT_PATH .. GetCurrentEnv().FILE_NAME, "/dd2repo/BoL/master/"..SCRIPT_NAME..".version"):CheckUpdate()
 end
+
 --[[
   ____          _                     _ 
  / __ \        | |                   | |
@@ -69,8 +70,9 @@ m.combosettings:addParam("usee", "Use E", SCRIPT_PARAM_ONOFF, true)
 m:addSubMenu("Harass Settings", "harasssettings")
 m.harasssettings:addParam("usehq", "Use Q", SCRIPT_PARAM_ONOFF, true)
 m.harasssettings:addParam("usehw", "Use W", SCRIPT_PARAM_ONOFF, true)
+m.harasssettings:addParam("mana", "Stop Harass if Mana under -> %", SCRIPT_PARAM_SLICE, 10, 0, 100, 0)
 m:addSubMenu("Legit Settings", "legit")
-m.legit:addParam("lmode", "Legit Mode", SCRIPT_PARAM_ONKEYTOGGLE, false, string.byte("V"))
+m.legit:addParam("lmode", "Legit Mode", SCRIPT_PARAM_ONKEYTOGGLE, false, string.byte("N"))
 m.legit:addParam("orbing", "Orbwalking", SCRIPT_PARAM_ONOFF, true)
 m.legit:addParam("stutter", "Stutterstep after every E", SCRIPT_PARAM_ONOFF, false)
 m.legit:addParam("edelaym", "Delay between E's", SCRIPT_PARAM_SLICE, 1, 0.5, 2, 2)
@@ -221,10 +223,11 @@ end
 
 function autozhonya()
 	if m.items.enableautozhonya then
-		if myHero.health <= (myHero.maxHealth * m.items.autozhonya / 100) then CastItem(3157) or 
+		if myHero.health <= (myHero.maxHealth * m.items.autozhonya / 100) then CastItem(3157) 
 		end
 	end
 end
+
 
 --[[	
  _                             
@@ -239,7 +242,7 @@ end
 function Harass()
 	if not target then return
 	end   
-	if m.harass then
+	if m.harass and (myHero.maxMana * m.harasssettings.mana / 100) <= myHero.mana then 
 		if Qready and m.harasssettings.usehq and target then
 			CastPreQ(target)
   		end
