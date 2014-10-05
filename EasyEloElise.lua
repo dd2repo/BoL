@@ -15,14 +15,6 @@
                   __/ |                                       
                  |___/ 
  ]]
-if not VIP_USER then
-    PrintChat(">> VIP Authentication Failed! You are not authorised to run this script. Unloading.<<")
-	return
-end
-
-if VIP_USER then
-	PrintChat(">> VIP Authentication Successful! Loading the VIP Version, please stand by... <<")
-end 
 
 if myHero.charName ~= "Elise" then
 return
@@ -74,27 +66,9 @@ assert(load(Base64Decode("G0x1YVIAAQQEBAgAGZMNChoKAAAAAAAAAAAAAQIDAAAAJQAAAAgAAI
  ]]
 
 function OnLoad()
-	UpdateWeb(true, ScriptName, id, HWID)
 	vars()
 	menu()
 end
-
-
-function OnBugsplat()
-	UpdateWeb(false, ScriptName, id, HWID)
-end
-
-function OnUnload()
-	UpdateWeb(false, ScriptName, id, HWID)
-end
-
--- Here is one I added to my OnTick to detect the end of the game
-if GetGame().isOver then
-	UpdateWeb(false, ScriptName, id, HWID)
-	-- This is a var where I stop executing what is in my OnTick()
-	startUp = false;
-end
-
 
 function menu()
 	m = scriptConfig("Easy Elo Elise", "easyeloelise")
