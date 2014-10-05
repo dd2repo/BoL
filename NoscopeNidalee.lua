@@ -389,6 +389,13 @@ function OnTick()
 	Killsteal()
 end
 
+function nidadmg(spell, object)
+	if spell == "spear" then
+		local dist = GetDistance(object)
+		local dmg = ((25*(1+(dist/1500)*2)+25*(1+(dist/1500)*2)*myHero:GetSpellData(_Q).level+myHero.ap*(0.4*(1+(dist/1500)*2)))*(100/(100+(object.magicArmor*myHero.magicPenPercent-myHero.magicPen)))
+	end
+end
+
 
 function targetmagnet()
     if m.combokey and COUGARFORM and target and m.combosettings.magnet then
