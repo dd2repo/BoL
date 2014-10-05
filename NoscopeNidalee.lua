@@ -1,5 +1,5 @@
 --[[
-	Script: Noscope Nidalee v0.16
+	Script: Noscope Nidalee v0.17
 	Author: DeadDevil2
 	v0.1 	Initial release
 	v0.2	Added VIP and Additionals
