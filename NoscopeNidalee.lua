@@ -75,7 +75,7 @@ local RequireI = Require("SourceLib")
 RequireI:Check()
 
 if AUTOUPDATE then
-     SourceUpdater(SCRIPT_NAME, VERSION, "raw.github.com", "/dd2repo/BoL/blob/master/"..SCRIPT_NAME..".lua", "/dd2repo/BoL/blob/master/"..SCRIPT_NAME..".version"):CheckUpdate()
+     SourceUpdater(SCRIPT_NAME, VERSION, "raw.github.com", "/dd2repo/BoL/master/"..SCRIPT_NAME..".lua", "/dd2repo/BoL/master/"..SCRIPT_NAME..".version"):CheckUpdate()
 end
 
 -- Thank you to Roach and Bilbao for the support!
