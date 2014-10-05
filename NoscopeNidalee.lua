@@ -55,7 +55,7 @@ local m = {}
 local ignite = nil
 
 local VIP_User
-local version = 0.15
+local version = 0.17
 local AUTOUPDATE = true
 local SCRIPT_NAME = "NoscopeNidalee"
 local SOURCELIB_URL = "https://raw.github.com/TheRealSource/public/master/common/SourceLib.lua"
@@ -76,7 +76,7 @@ RequireI:Check()
 
 
 if AUTOUPDATE then
-     SourceUpdater(SCRIPT_NAME, VERSION "raw.github.com", "/dd2repo/BoL/master/"..SCRIPT_NAME..".lua", SCRIPT_PATH .. GetCurrentEnv().FILE_NAME, "/dd2repo/BoL/master/"..SCRIPT_NAME..".version"):CheckUpdate()
+     SourceUpdater(SCRIPT_NAME, version "raw.github.com", "/dd2repo/BoL/master/"..SCRIPT_NAME..".lua", SCRIPT_PATH .. GetCurrentEnv().FILE_NAME, "/dd2repo/BoL/master/"..SCRIPT_NAME..".version"):CheckUpdate()
 end
 
 -- Thank you to Roach and Bilbao for the support!
