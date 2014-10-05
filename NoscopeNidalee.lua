@@ -264,6 +264,7 @@ end
 
 function menu()
 	m = scriptConfig("MScripting - Noscope Nidalee", "Noscopenidalee")
+	
 	m:addSubMenu("Combo Manager", "combosettings")
 	m.combosettings:addSubMenu("Humanform Combo", "humancombo")
 	m.combosettings.humancombo:addParam("usehq", "Use Q", SCRIPT_PARAM_ONOFF, true)
@@ -281,6 +282,7 @@ function menu()
 	m.combosettings:addParam("magnet", "Meele Magnet", SCRIPT_PARAM_ONOFF, false)
 	m.combosettings:addParam("Cinfo", "Only for Cougar in meele Range to avoid aa cancel", 5, "")
 	m.combosettings:addParam("Cinfo", "Pls check the Thread for further explanation", 5, "")
+	
 	m:addSubMenu("Item Manager", "items")
 	m.items:addParam("useitems", "Use Items", SCRIPT_PARAM_ONOFF, true)
 	m.items:addParam("platzhalter", "", 5, "")
@@ -303,6 +305,7 @@ function menu()
 	m.items:addParam("hybriditemsinfo", "--- Defensive Items ---", 5, "")
 	m.items:addParam("enableautozhonya", "Auto Zhonya's", SCRIPT_PARAM_ONOFF, false)
 	m.items:addParam("autozhonya", "Zhonya's if Health under -> %", SCRIPT_PARAM_SLICE, 10, 0, 100, 0)
+	
 	m:addSubMenu("Heal Manager", "healmanager")
 	m.healmanager:addParam("healinfo", "--- Self Heal ---", 5, "")
 	m.healmanager:addParam("enableheal", "Auto Heal", SCRIPT_PARAM_ONOFF, true)
@@ -317,6 +320,7 @@ function menu()
 	m.ks:addParam("usecq", "Use Cougar Q", SCRIPT_PARAM_ONOFF, true)
 	m.ks:addParam("usecw", "Use Cougar W", SCRIPT_PARAM_ONOFF, true)
 	m.ks:addParam("usece", "Use Cougar E", SCRIPT_PARAM_ONOFF, true)
+	
 	m:addSubMenu("Drawings", "draw")
 	m.draw:addParam("drawq", "Draw Spear Range", SCRIPT_PARAM_ONOFF, false)
 	m.draw:addParam("drawaa", "Draw AA Range", SCRIPT_PARAM_ONOFF, false)
@@ -333,8 +337,10 @@ function menu()
 	m.vip:addParam("CL", "Length before snapping", 4, 75, 75, 2000, 0)
 	m.vip:addParam("CLinfo", "The lower your length the better system you need", 5, "")
 	sow:LoadToMenu(m.orbwalk)
+	
 	m:addTS(ts)
 	ts.name = "Noscope"
+	
 	m:addParam("combokey", "Combo", SCRIPT_PARAM_ONKEYDOWN, false, 32)
 	m:addParam("escapekey", "Escape", SCRIPT_PARAM_ONKEYDOWN, false, 88)
 	m:addParam("harass", "Toogle Auto Harass with Spears", SCRIPT_PARAM_ONKEYTOGGLE, false, string.byte("C"))
@@ -487,8 +493,6 @@ function Huntedcheck()
 	return
 	end
 end
---------------------------------------------------------------------------------------------
---------------------------------------------------------------------------------------------
 
 function LFC()
 	if not m.vip.LagFree then _G.DrawCircle = _G.oldDrawCircle end
@@ -692,8 +696,7 @@ function harasspro()
 		end
 	end
 end
---------------------------------------------------------------------------------------------
---------------------------------------------------------------------------------------------
+
 local inCircle = false
 local currentFrom = nil
 local currentTo = nil
