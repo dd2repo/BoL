@@ -20,6 +20,15 @@ if myHero.charName ~= "Elise" then
 return
 end
 
+if not VIP_USER then
+    PrintChat(">> VIP Authentication Failed! You are not authorised to run this script. Unloading.<<")
+	return
+end
+
+if VIP_USER then
+	PrintChat(">> VIP Authentication Successful! Loading the VIP Version, please stand by... <<")
+end 
+
 require 'Collision'
 require 'VPrediction'
 require 'SOW'
