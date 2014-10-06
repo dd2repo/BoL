@@ -262,7 +262,7 @@ function vars()
 end
 
 function menu()
-	m = scriptConfig("MScripting - Noscope Nidalee", "Noscopenidalee")
+	m = scriptConfig("Noscope Nidalee", "Noscopenidalee")
 	
 	m:addSubMenu("Combo Manager", "combosettings")
 	m.combosettings:addSubMenu("Humanform Combo", "humancombo")
