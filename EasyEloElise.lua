@@ -78,7 +78,7 @@ end
 function menu()
 	m = scriptConfig("Easy Elo Elise", "easyeloelise")
 
-	m:addSubMenu("Combo Manager", "combosettings")
+        m:addSubMenu("Combo Manager", "combosettings")
 	m.combosettings:addSubMenu("Humanform Combo", "humancombo")
 	m.combosettings.humancombo:addParam("useq", "Use Human Q", SCRIPT_PARAM_ONOFF, true) 
 	m.combosettings.humancombo:addParam("usew", "Use Human W", SCRIPT_PARAM_ONOFF, true)
