@@ -13,6 +13,7 @@ by DeadDevil2 :)
 Chanelog:
 v1.0 inital release
 v1.1 Fixed some target bugs 
+v1.2 Added Auto Ultimate
 ]]
 
 if myHero.charName ~= "MonkeyKing" then
@@ -24,7 +25,7 @@ require 'Vprediction'
 
 local selectedTar = nil
 local VP = nil
-local version = 1.1
+local version = 1.2
 local AUTOUPDATE = true
 local SCRIPT_NAME = "WobbleWukong"
 local selectedTar = nil
@@ -75,6 +76,9 @@ m:addSubMenu("Combo Settings", "combosettings")
 m.combosettings:addParam("useq", "Use Q", SCRIPT_PARAM_ONOFF, true)
 m.combosettings:addParam("usee", "Use E", SCRIPT_PARAM_ONOFF, true)
 
+m:addSubMenu("Ultimate Settings", "ultimatesettings")
+m.ultimatesettings:addParam("useau", "Use Auto-Ultimate", SCRIPT_PARAM_ONOFF, true)
+m.ultimatesettings:addParam("auv", "Use Auto-Ultimate if it hits", SCRIPT_PARAM_LIST, 1, {"2 Targets", "3 Targets", "4 Targets", "5 Targets" })
 
 m:addSubMenu("KS Settings", "ks")
 m.ks:addParam("ignite", "Use Ignite", SCRIPT_PARAM_ONOFF, true)
@@ -93,7 +97,7 @@ m:addSubMenu("Orbwalker", "orbwalk")
 sow:LoadToMenu(m.orbwalk)
 m:addTS(ts)
 ts.name = "Wobble"
-PrintChat ("<font color='#00BCFF'>Wobble Wukong v1.1 by DeadDevil2 Loaded! </font>")
+PrintChat ("<font color='#00BCFF'>Wobble Wukong v1.2 by DeadDevil2 Loaded! </font>")
 
 end
 
@@ -130,6 +134,7 @@ Killsteal()
 CastQ()
 CastE()
 CST()
+Autoult()
 end
 
 
@@ -151,6 +156,39 @@ function checks()
 	Rready = (myHero:CanUseSpell(_R) == READY)
 	target = ts.target
 
+end
+
+function CountEnemyHeroInRange(range)
+	local enemyInRange = 0
+	for i = 1, heroManager.iCount, 1 do
+		local hero = heroManager:getHero(i)
+		if ValidTarget(hero,range) then
+			enemyInRange = enemyInRange + 1
+		end
+	end
+	return enemyInRange
+end 
+
+function Autoult()
+	if m.ultimatesettings.useau then
+		if m.ultimatesettings.auv == 1 then
+			if CountEnemyHeroInRange(315) >= 2 then
+				CastSpell(_R)
+			end
+		elseif m.ultimatesettings.auv == 2 then
+			if CountEnemyHeroInRange(315) >= 3 then
+				CastSpell(_R)
+			end
+		elseif m.ultimatesettings.auv == 3 then
+			if CountEnemyHeroInRange(315) >= 4 then
+				CastSpell(_R)
+			end
+		elseif m.ultimatesettings.auv == 4 then
+			if CountEnemyHeroInRange(315) >= 5 then
+				CastSpell(_R)
+			end
+		end
+	end
 end
 
 function hydra()
