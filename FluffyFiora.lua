@@ -22,7 +22,7 @@ Credits:
 »	Han Seoul for creating AA detection
 
 Donator Version:
-»	Dontors will have extra Ultimate Dodge feature
+»	Donators will have extra Ultimate Dodge feature
 
 Chanelog:
 » 	1.0 Inital Release
