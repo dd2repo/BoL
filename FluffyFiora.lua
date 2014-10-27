@@ -16,6 +16,7 @@ Features:
 »	Meele Magnet
 »	Hydra, Tiamat AA Reset
 »	Left Click Target Selection
+»	Counts enemys in range for Ult Dmg Calculation
 
 Credits:
 »	DeadDevil2 for creating this Script
