@@ -1,36 +1,3 @@
---[[
-
-███████╗██╗     ██╗   ██╗███████╗███████╗██╗   ██╗    ███████╗██╗ ██████╗ ██████╗  █████╗ 
-██╔════╝██║     ██║   ██║██╔════╝██╔════╝╚██╗ ██╔╝    ██╔════╝██║██╔═══██╗██╔══██╗██╔══██╗
-█████╗  ██║     ██║   ██║█████╗  █████╗   ╚████╔╝     █████╗  ██║██║   ██║██████╔╝███████║
-██╔══╝  ██║     ██║   ██║██╔══╝  ██╔══╝    ╚██╔╝      ██╔══╝  ██║██║   ██║██╔══██╗██╔══██║
-██║     ███████╗╚██████╔╝██║     ██║        ██║       ██║     ██║╚██████╔╝██║  ██║██║  ██║
-╚═╝     ╚══════╝ ╚═════╝ ╚═╝     ╚═╝        ╚═╝       ╚═╝     ╚═╝ ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝
-                                                                                         
-Features:
-» 	Autolevel Spells
-»	2 Different Q Mode's
-»	Auto AA's detection for optimal W Usage
-»	2 Different E Mode's
-»	Auto Ultimate if will hit x-enemys
-»	Finish Off Enemys with Ultimate
-»	KS with Q, Ignite and Ultimate
-»	Skin Changer
-»	Meele Magnet
-»	Hydra, Tiamat AA Reset
-
-Credits:
-»	DeadDevil2 for creating this Script
-»	Han Seoul for creating AA detection
-
-Donator Version:
-»	Dontors will have extra Ultimate Dodge feature
-
-Chanelog:
-» 	1.0 Inital Release
-
-]]
-
 if myHero.charName ~= "Fiora" or not VIP_USER then
 return
 end
@@ -205,7 +172,7 @@ Han_WTick()
 CST()
 --BuffTick()
 --levelsequence()
-autolevel()
+--autolevel()
 LFC()
 end
 
