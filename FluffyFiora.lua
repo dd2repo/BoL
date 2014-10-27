@@ -183,29 +183,6 @@ function LFC()
 	end
 end
 
-function autolevel()
-    local qL, wL, eL, rL = player:GetSpellData(_Q).level + qOff, player:GetSpellData(_W).level + wOff, player:GetSpellData(_E).level + eOff, player:GetSpellData(_R).level + rOff
-    if qL + wL + eL + rL < player.level then
-        local spellSlot = { SPELL_1, SPELL_2, SPELL_3, SPELL_4, }
-        local level = { 0, 0, 0, 0 }
-        for i = 1, player.level, 1 do
-            level[abilitySequence[i]] = level[abilitySequence[i]] + 1
-        end
-        for i, v in ipairs({ qL, wL, eL, rL }) do
-            if v < level[i] then LevelSpell(spellSlot[i]) end
-        end
-    end
-end
-
-function levelsequence()
-if not m.adds.al then return end
-if m.adds.alp == 2 then
-	abilitySequence = { 2, 1, 3, 2, 2, 4, 2, 3, 2, 3, 4, 3, 3, 1, 1, 4, 1, 1 }
-elseif m.adds.alp == 1 then
-	abilitySequence = { 1, 3, 2, 1, 1, 4, 1, 2, 1, 2, 4, 2, 2, 3, 3, 4, 3, 3 }
-end
-end
-
 function BuffTick()
 	if (os.clock() - BuffGT) > 3.8 then secondq = true end 
 end
