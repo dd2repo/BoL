@@ -6,6 +6,7 @@
   TODO
   - Dmg Calculation
   - Draw Kil Text
+  - Auto level sequenze
 
 ]]
 if not VIP_USER then
@@ -317,6 +318,7 @@ function OnTick()
   TargetDistance()
   JungleClear()
   Clear()
+  Killtext()
 end
 
 function Targetmagnet()
@@ -385,7 +387,7 @@ function Killtext()
         local FullDMG   = 0.2*(Qdmg+Wdmg+Edmg+Rdmg)+DFGdmg
 
             if      enemy.health > FullDMG  then enemyTable[i].indicatorText = "Not Killable" end
-            elseif  enemy.health =< FullDMG  then enemyTable[i].indicatorText = "Hard Combo Kill" end
+            elseif  enemy.health < FullDMG  then enemyTable[i].indicatorText = "Hard Combo Kill" end
         end
     end
 end
