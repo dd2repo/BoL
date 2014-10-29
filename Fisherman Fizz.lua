@@ -386,8 +386,9 @@ function Killtext()
 
         local FullDMG   = 0.2*(Qdmg+Wdmg+Edmg+Rdmg)+DFGdmg
 
-            if      enemy.health > FullDMG  then enemyTable[i].indicatorText = "Not Killable" end
-            elseif  enemy.health < FullDMG  then enemyTable[i].indicatorText = "Hard Combo Kill" end
+            if      enemy.health > FullDMG  then enemyTable[i].indicatorText = "Not Killable"
+            elseif  enemy.health < FullDMG  then enemyTable[i].indicatorText = "Hard Combo Kill" 
+            end
         end
     end
 end
