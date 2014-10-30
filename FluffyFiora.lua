@@ -20,7 +20,7 @@ local melee = false
 local BuffGT = 0
 local ignite = nil
 local VIP_User
-local version = 1.3
+local version = 1.4
 local AUTOUPDATE = true
 local SCRIPT_NAME = "FluffyFiora"
 local SOURCELIB_URL = "https://raw.github.com/TheRealSource/public/master/common/SourceLib.lua"
@@ -124,6 +124,7 @@ m.draws:addParam("LagFree", "Lag Free Circles", 1, false)
 m.draws:addParam("disable", "Disable all Drawings", SCRIPT_PARAM_ONOFF, false)
 m:addSubMenu("[Additionals]", "adds")
 m.adds:addParam("ignite", "Dont use Ignite", SCRIPT_PARAM_ONOFF, false)
+m.adds:addParam("uselts", "Use Left-Click Target Selection", SCRIPT_PARAM_ONOFF, false)
 m.adds:addParam("al", "Auto level Spells", SCRIPT_PARAM_ONOFF, false)
 m.adds:addParam("alp", "Auto level Spells Priority", SCRIPT_PARAM_LIST, 1, {"R>Q>E>W", "R>E>Q>W"})
 m:addSubMenu("[Skin Manager]", "skin")
@@ -134,11 +135,12 @@ if m.skin.Skin then
     lastSkin = m.skin.Select
 end
 m:addParam("magnet", "Meele Magnet", SCRIPT_PARAM_ONOFF, true)
+m:addParam("smart", "Smart Combo", SCRIPT_PARAM_ONOFF, true)
 m:addSubMenu("[Orbwalker]", "orbwalk")
 sow:LoadToMenu(m.orbwalk)
 m:addTS(ts)
 ts.name = "Fluffy"
-PrintChat ("<font color='#00BCFF'>[Fluffy Fiora] v1.2 by DeadDevil2 Loaded! </font>")
+PrintChat ("<font color='#00BCFF'>[Fluffy Fiora] v1.4 by DeadDevil2 Loaded! </font>")
 end
 --[[
 function OnGainBuff(unit,buff)
@@ -174,6 +176,8 @@ CST()
 --levelsequence()
 --autolevel()
 LFC()
+JungleClear()
+Clear()
 end
 
 function LFC()
@@ -315,9 +319,11 @@ end
 function Killsteal()
 	for _, enemy in pairs(GetEnemyHeroes()) do
 	if Ignite ~= nil and not m.adds.ignite and enemy.health < getDmg("IGNITE", enemy, myHero) and ValidTarget(enemy, 600) then CastSpell(Ignite, enemy) end
+	local Idmg = getDmg("IGNITE", enemy, myHero)
 	local Rdmg = getDmg('R', enemy, myHero)
 	local Qdmg = getDmg('Q', enemy, myHero)
 	local ARdmg = Rdmg+(4*(Rdmg*0.25))
+	local QRdmg = ARdmg+Qdmg*2
 		if usingult then return end
 		if CountEnemyHeroInRange(800) == 1 then
 			if ValidTarget(enemy, 400) and m.ultimatesettings.finish then
@@ -336,6 +342,24 @@ function Killsteal()
 		if ValidTarget(enemy, 600) and m.qsettings.useks then
 			if Qready and enemy.health <= Qdmg then
 				CastSpell(_Q, enemy)
+			end
+		end
+		if ValidTarget(enemy, 600) and m.qsettings.useks then
+			if Qready and enemy.health <= Qdmg*2 then
+				CastSpell(_Q, enemy) 
+			end
+		end
+		if m.smart and ValidTarget(enemy, 600) and CountEnemyHeroInRange(800) == 1 then
+			if enemy.health <= Qdmg*2 and Qready then return end
+			if Rready and myHero:GetSpellData(_Q).currentCd < 3 and enemy.health <= QRdmg then
+				CastSpell(_R, enemy)
+			end
+		end
+		if m.smart and ValidTarget(enemy, 600) and CountEnemyHeroInRange(800) == 1 then
+			if (enemy.health <= QRdmg or enemy.health <= Qdmg*2) and Qready then return end
+			if Rready and (myHero:CanUseSpell(Ignite) == READY) and myHero:GetSpellData(_Q).currentCd < 3 and enemy.health <= QRdmg+Idmg then
+				CastSpell(Ignite, enemy)
+				CastSpell(_R, enemy)
 			end
 		end
 	end
@@ -508,24 +532,26 @@ function CST()
 end
 --thanks to bilbao
 function OnWndMsg(Msg, Key)
-	if Msg == WM_LBUTTONDOWN then
-		local minD = 10
-		local starget = nil
-		for i, enemy in ipairs(GetEnemyHeroes()) do
-			if ValidTarget(enemy) then
-				if GetDistance(enemy, mousePos) <= minD or starget == nil then
-					minD = GetDistance(enemy, mousePos)
-					starget = enemy
+	if m.adds.uselts then
+		if Msg == WM_LBUTTONDOWN then
+			local minD = 10
+			local starget = nil
+			for i, enemy in ipairs(GetEnemyHeroes()) do
+				if ValidTarget(enemy) then
+					if GetDistance(enemy, mousePos) <= minD or starget == nil then
+						minD = GetDistance(enemy, mousePos)
+						starget = enemy
+					end
 				end
-			end
-		end		
-		if starget and minD < 500 then
-			if selectedTar and starget.charName == selectedTar.charName then
-				selectedTar = nil
-				print("<font color=\"#00BCFF\">Fiora: Target <b>unselected</b>: "..starget.charName.."</font>")
-			else
-				selectedTar = starget				
-				print("<font color=\"#00BCFF\">Fiora: New target <b>selected</b>: "..starget.charName.."</font>")
+			end		
+			if starget and minD < 500 then
+				if selectedTar and starget.charName == selectedTar.charName then
+					selectedTar = nil
+					print("<font color=\"#00BCFF\">Fiora: Target <b>unselected</b>: "..starget.charName.."</font>")
+				else
+					selectedTar = starget				
+					print("<font color=\"#00BCFF\">Fiora: New target <b>selected</b>: "..starget.charName.."</font>")
+				end
 			end
 		end
 	end
