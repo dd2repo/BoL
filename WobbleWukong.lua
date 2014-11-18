@@ -1,19 +1,12 @@
 --[[
-__          __   _     _     _       __          __    _                     
-\ \        / /  | |   | |   | |      \ \        / /   | |                    
- \ \  /\  / /__ | |__ | |__ | | ___   \ \  /\  / /   _| | _____  _ __   __ _ 
-  \ \/  \/ / _ \| '_ \| '_ \| |/ _ \   \ \/  \/ / | | | |/ / _ \| '_ \ / _` |
-   \  /\  / (_) | |_) | |_) | |  __/    \  /\  /| |_| |   < (_) | | | | (_| |
-    \/  \/ \___/|_.__/|_.__/|_|\___|     \/  \/  \__,_|_|\_\___/|_| |_|\__, |
-                                                                        __/ |
-                                                                       |___/              
-
+Wooble Wukong
 by DeadDevil2 :)
 
 Chanelog:
 v1.0 inital release
 v1.1 Fixed some target bugs 
 v1.2 Added Auto Ultimate
+v.1.3 Fixed ult cancel bug
 ]]
 
 if myHero.charName ~= "MonkeyKing" then
@@ -25,7 +18,7 @@ require 'Vprediction'
 
 local selectedTar = nil
 local VP = nil
-local version = 1.2
+local version = 1.3
 local AUTOUPDATE = true
 local SCRIPT_NAME = "WobbleWukong"
 local selectedTar = nil
@@ -50,27 +43,14 @@ if AUTOUPDATE then
      SourceUpdater(SCRIPT_NAME, version, "raw.github.com", "/dd2repo/BoL/master/"..SCRIPT_NAME..".lua", SCRIPT_PATH .. GetCurrentEnv().FILE_NAME, "/dd2repo/BoL/master/"..SCRIPT_NAME..".version"):CheckUpdate()
 end
 
-
---[[
-  ____          _                     _ 
- / __ \        | |                   | |
-| |  | |_ __   | |     ___   __ _  __| |
-| |  | | '_ \  | |    / _ \ / _` |/ _` |
-| |__| | | | | | |___| (_) | (_| | (_| |
- \____/|_| |_| |______\___/ \__,_|\__,_|
- ]]
-
 function OnLoad()
-
 ts = TargetSelector(TARGET_LESS_CAST_PRIORITY,315)
 m = scriptConfig("Wobble Wukong", "wobblewukong")
 VP = VPrediction()
 sow = SOW(VP)
 sow:RegisterAfterAttackCallback(hydra)
 --sow:RegisterOnAttackCallback(CastQ)
-
 Ignite = (myHero:GetSpellData(SUMMONER_1).name:find("summonerdot") and SUMMONER_1) or (myHero:GetSpellData(SUMMONER_2).name:find("summonerdot") and SUMMONER_2) or nil
-
 
 m:addSubMenu("Combo Settings", "combosettings")
 m.combosettings:addParam("useq", "Use Q", SCRIPT_PARAM_ONOFF, true)
@@ -97,10 +77,8 @@ m:addSubMenu("Orbwalker", "orbwalk")
 sow:LoadToMenu(m.orbwalk)
 m:addTS(ts)
 ts.name = "Wobble"
-PrintChat ("<font color='#00BCFF'>Wobble Wukong v1.2 by DeadDevil2 Loaded! </font>")
-
+PrintChat ("<font color='#00BCFF'>Wobble Wukong v1.3 by DeadDevil2 Loaded! </font>")
 end
-
 
 function OnGainBuff(unit, buff)
     if buff.name == 'MonkeyKingSpinToWin' and unit.isMe then
@@ -114,18 +92,6 @@ function OnLoseBuff(unit, buff)
     end
 end
 
-
---[[
-  ____          _______ _      _    
- / __ \        |__   __(_)    | |   
-| |  | |_ __      | |   _  ___| | __
-| |  | | '_ \     | |  | |/ __| |/ /
-| |__| | | | |    | |  | | (__|   < 
- \____/|_| |_|    |_|  |_|\___|_|\_\
-]]       
-
-
-
 function OnTick()
 checks()
 targetmagnet()
@@ -137,17 +103,6 @@ CST()
 Autoult()
 end
 
-
-
---[[
-  _____                _           
- / ____|              | |          
-| |     ___  _ __ ___ | |__   ___  
-| |    / _ \| '_ ` _ \| '_ \ / _ \ 
-| |___| (_) | | | | | | |_) | (_) |
- \_____\___/|_| |_| |_|_.__/ \___/ 
- ]] 
-
 function checks()
 	ts:update()
 	Qready = (myHero:CanUseSpell(_Q) == READY)
@@ -155,7 +110,6 @@ function checks()
 	Eready = (myHero:CanUseSpell(_E) == READY)
 	Rready = (myHero:CanUseSpell(_R) == READY)
 	target = ts.target
-
 end
 
 function CountEnemyHeroInRange(range)
@@ -170,7 +124,7 @@ function CountEnemyHeroInRange(range)
 end 
 
 function Autoult()
-	if m.ultimatesettings.useau then
+	if m.ultimatesettings.useau and not usingult then
 		if m.ultimatesettings.auv == 1 then
 			if CountEnemyHeroInRange(315) >= 2 then
 				CastSpell(_R)
@@ -260,14 +214,13 @@ function stayclose(unit, mode)
 	end
 end
 
-
 function CST()
 	local Target = nil
 	if selectedTar then Target = selectedTar
 	else Target = ts.target
 	end
 end
---thanks to bilbao
+
 function OnWndMsg(Msg, Key)
 	if Msg == WM_LBUTTONDOWN then
 		local minD = 10
@@ -292,7 +245,6 @@ function OnWndMsg(Msg, Key)
 	end
 end
 
-
 function OnDraw()
 if m.draws.drawq then
 	DrawCircle(myHero.x, myHero.y, myHero.z, 300, ARGB(255, 255, 255, 255))
@@ -304,5 +256,3 @@ if m.draws.drawr then
 	DrawCircle(myHero.x, myHero.y, myHero.z, 315, ARGB(255, 255, 255, 255))
 end
 end
-
-
