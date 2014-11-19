@@ -18,7 +18,7 @@
 	v0.15   Added Some KS Stuff
 	v0.16  	Reworked Prodiction Spear Logic
 	v0.17 	Fixed the E KS Bug
-	v0.18   Fixed Heal
+	v0.18   Fixed Heal & Mscripting leave
  _   _                                  _   _ _     _       _           
 | \ | |                                | \ | (_)   | |     | |          
 |  \| | ___  ___  ___ ___  _ __   ___  |  \| |_  __| | __ _| | ___  ___ 
