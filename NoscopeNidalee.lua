@@ -18,6 +18,7 @@
 	v0.15   Added Some KS Stuff
 	v0.16  	Reworked Prodiction Spear Logic
 	v0.17 	Fixed the E KS Bug
+	v0.18   Fixed Heal
  _   _                                  _   _ _     _       _           
 | \ | |                                | \ | (_)   | |     | |          
 |  \| | ___  ___  ___ ___  _ __   ___  |  \| |_  __| | __ _| | ___  ___ 
@@ -54,7 +55,7 @@ local m = {}
 local ignite = nil
 
 local VIP_User
-local version = 0.17
+local version = 0.18
 local AUTOUPDATE = true
 local SCRIPT_NAME = "NoscopeNidalee"
 local SOURCELIB_URL = "https://raw.github.com/TheRealSource/public/master/common/SourceLib.lua"
@@ -232,14 +233,7 @@ local function CastQ(unit, pos, spell)
 		return
 	end
 end
---[[
-  ____          _                     _ 
- / __ \        | |                   | |
-| |  | |_ __   | |     ___   __ _  __| |
-| |  | | '_ \  | |    / _ \ / _` |/ _` |
-| |__| | | | | | |___| (_) | (_| | (_| |
- \____/|_| |_| |______\___/ \__,_|\__,_|
- ]]
+
 function OnLoad()
 	vars()
 	menu()
@@ -263,7 +257,6 @@ end
 
 function menu()
 	m = scriptConfig("Noscope Nidalee", "Noscopenidalee")
-	
 	m:addSubMenu("Combo Manager", "combosettings")
 	m.combosettings:addSubMenu("Humanform Combo", "humancombo")
 	m.combosettings.humancombo:addParam("usehq", "Use Q", SCRIPT_PARAM_ONOFF, true)
@@ -281,7 +274,6 @@ function menu()
 	m.combosettings:addParam("magnet", "Meele Magnet", SCRIPT_PARAM_ONOFF, false)
 	m.combosettings:addParam("Cinfo", "Only for Cougar in meele Range to avoid aa cancel", 5, "")
 	m.combosettings:addParam("Cinfo", "Pls check the Thread for further explanation", 5, "")
-	
 	m:addSubMenu("Item Manager", "items")
 	m.items:addParam("useitems", "Use Items", SCRIPT_PARAM_ONOFF, true)
 	m.items:addParam("platzhalter", "", 5, "")
@@ -304,7 +296,6 @@ function menu()
 	m.items:addParam("hybriditemsinfo", "--- Defensive Items ---", 5, "")
 	m.items:addParam("enableautozhonya", "Auto Zhonya's", SCRIPT_PARAM_ONOFF, false)
 	m.items:addParam("autozhonya", "Zhonya's if Health under -> %", SCRIPT_PARAM_SLICE, 10, 0, 100, 0)
-	
 	m:addSubMenu("Heal Manager", "healmanager")
 	m.healmanager:addParam("healinfo", "--- Self Heal ---", 5, "")
 	m.healmanager:addParam("enableheal", "Auto Heal", SCRIPT_PARAM_ONOFF, true)
@@ -319,7 +310,6 @@ function menu()
 	m.ks:addParam("usecq", "Use Cougar Q", SCRIPT_PARAM_ONOFF, true)
 	m.ks:addParam("usecw", "Use Cougar W", SCRIPT_PARAM_ONOFF, true)
 	m.ks:addParam("usece", "Use Cougar E", SCRIPT_PARAM_ONOFF, true)
-	
 	m:addSubMenu("Drawings", "draw")
 	m.draw:addParam("drawq", "Draw Spear Range", SCRIPT_PARAM_ONOFF, false)
 	m.draw:addParam("drawaa", "Draw AA Range", SCRIPT_PARAM_ONOFF, false)
@@ -336,18 +326,13 @@ function menu()
 	m.vip:addParam("CL", "Length before snapping", 4, 75, 75, 2000, 0)
 	m.vip:addParam("CLinfo", "The lower your length the better system you need", 5, "")
 	sow:LoadToMenu(m.orbwalk)
-	
 	m:addTS(ts)
 	ts.name = "Noscope"
-	
 	m:addParam("combokey", "Combo", SCRIPT_PARAM_ONKEYDOWN, false, 32)
 	m:addParam("escapekey", "Escape", SCRIPT_PARAM_ONKEYDOWN, false, 88)
 	m:addParam("harass", "Toogle Auto Harass with Spears", SCRIPT_PARAM_ONKEYTOGGLE, false, string.byte("C"))
 	m:addParam("jumpkey", "Perfect Jump", SCRIPT_PARAM_ONKEYDOWN, false,  string.byte("Y"))
-	--m:addParam("circlesize", "circle size", SCRIPT_PARAM_SLICE, 75, 1, 200)
-	--m:addParam("procrange", "proc range", SCRIPT_PARAM_SLICE, 50, 1, 200)
-
-	PrintChat ("<font color='#FF9A00'>Noscope Nidalee v0.17 by DeadDevil2 Loaded! </font>")
+	PrintChat ("<font color='#FF9A00'>Noscope Nidalee v0.18 by DeadDevil2 Loaded! </font>")
 end
 
 function collinfo()
@@ -361,14 +346,6 @@ function collinfo()
 	end
 end
 
---[[
-  ____          _______ _      _    
- / __ \        |__   __(_)    | |   
-| |  | |_ __      | |   _  ___| | __
-| |  | | '_ \     | |  | |/ __| |/ /
-| |__| | | | |    | |  | | (__|   < 
- \____/|_| |_|    |_|  |_|\___|_|\_\
-]]                                    
 function OnTick()
 	ts:update()
 	target = ts.target
@@ -395,7 +372,6 @@ end
 --		local dmg = ((25*(1+(dist/1500)*2)+25*(1+(dist/1500)*2)*myHero:GetSpellData(_Q).level+myHero.ap*(0.4*(1+(dist/1500)*2)))*(100/(100+(object.magicArmor*myHero.magicPenPercent-myHero.magicPen)))
 --	end
 --end
-
 
 function targetmagnet()
     if m.combokey and COUGARFORM and target and m.combosettings.magnet then
@@ -438,17 +414,6 @@ function checks()
 	Iready = (ignite ~= nil and myHero:CanUseSpell(ignite) == READY)
 end
 
---[[
- _____           __          _          _                       
-|  __ \         / _|        | |        | |                      
-| |__) |__ _ __| |_ ___  ___| |_       | |_   _ _ __ ___  _ __  
-|  ___/ _ \ '__|  _/ _ \/ __| __|  _   | | | | | '_ ` _ \| '_ \ 
-| |  |  __/ |  | ||  __/ (__| |_  | |__| | |_| | | | | | | |_) |
-|_|   \___|_|  |_| \___|\___|\__|  \____/ \__,_|_| |_| |_| .__/ 
-                                                         | |    
-                                                         |_|  
-]]
-
 function escape()
 	if m.escapekey then
 			myHero:MoveTo(mousePos.x, mousePos.z)
@@ -461,16 +426,6 @@ function escape()
 		end
 	end
 end
-
-
---[[
- _____              _              _____ _               _        
-|  __ \            (_)            / ____| |             | |       
-| |__) |_ _ ___ ___ ___   _____  | |    | |__   ___  ___| | _____ 
-|  ___/ _` / __/ __| \ \ / / _ \ | |    | '_ \ / _ \/ __| |/ / __|
-| |  | (_| \__ \__ \ |\ V /  __/ | |____| | | |  __/ (__|   <\__ \
-|_|   \__,_|___/___/_| \_/ \___|  \_____|_| |_|\___|\___|_|\_\___/
-]]                                                      
 
 function TargetHunted(unit)
  return TargetHaveBuff('nidaleepassivehunted', unit)
@@ -519,12 +474,10 @@ end
 function autoheal()
 	if not COUGARFORM then
 		if m.healmanager.enableheal and Eready and myHero.health <= (myHero.maxHealth * m.healmanager.heal / 100) then
-			CastSpell (_E)
-		
+			CastSpell(_E)
 		end
 	elseif Rready and m.healmanager.healswitch and m.healmanager.enableheal and myHero.health <= (myHero.maxHealth * m.healmanager.heal / 100) then
-		CastSpell (_R)
-		
+		CastSpell(_R)
 	end
 end
 	
@@ -538,14 +491,7 @@ end
 function CastCougarQ()
 	if m.combokey and Qready and m.combosettings.cougarcombo.usecq and target and ValidTarget(target) then CastSpell(_Q) end 
 end
---[[
-  _____                _           
- / ____|              | |          
-| |     ___  _ __ ___ | |__   ___  
-| |    / _ \| '_ ` _ \| '_ \ / _ \ 
-| |___| (_) | | | | | | |_) | (_) |
- \_____\___/|_| |_| |_|_.__/ \___/ 
- ]]                                                                 
+                                                                
 function combo()
 	if not target then 
 		return 
@@ -593,7 +539,6 @@ function combo()
 	end
 end
 
-
 function Killsteal()
 	for _, enemy in pairs(GetEnemyHeroes()) do
 		if Ignite ~= nil and m.ks.ignite and enemy.health < getDmg("IGNITE", enemy, myHero) and ValidTarget(enemy, 600) then CastSpell(Ignite, enemy)
@@ -619,7 +564,6 @@ function Killsteal()
 		end
 	end	
 end
-
 
 function Items()
 	if not target then 
@@ -664,17 +608,7 @@ function Items()
 		end
 	end
 end
-		
---[[	
- _                             
-| |                            
-| |__   __ _ _ __ __ _ ___ ___ 
-| '_ \ / _` | '__/ _` / __/ __|
-| | | | (_| | | | (_| \__ \__ \
-|_| |_|\__,_|_|  \__,_|___/___/
 
- ]]                             
-                               
 function harass()
 	if not target then return end
 	if m.vip.prodiction == 2 then return end
@@ -753,15 +687,6 @@ function DrawJumpSpots()
 		end
 	end
 end
-
---[[
-  ____          _____                     
- / __ \        |  __ \                    
-| |  | |_ __   | |  | |_ __ __ ___      __
-| |  | | '_ \  | |  | | '__/ _` \ \ /\ / /
-| |__| | | | | | |__| | | | (_| |\ V  V / 
- \____/|_| |_| |_____/|_|  \__,_| \_/\_/  
- ]]
 
 function OnDraw()
 	DrawJumpSpots()
