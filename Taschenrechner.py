@@ -5,9 +5,8 @@ from tkinter import *
 window = Tk()
 window.title("Rechozilla")
 window.geometry("180x180")
-window.wm_iconbitmap('tcl\myicon.ico')
+##window.wm_iconbitmap('tcl\myicon.ico')
 window.resizable(0, 0)
-
 
 eingabex = Entry(window)
 eingabex.pack(fill=BOTH)
@@ -56,7 +55,7 @@ def rechnengeteilt():
 	except:
 		label1.configure(text="Es ist ein Fehler aufgetreten!")
 
-buttonplus = Button(window, text="+", command=rechnenplus, height=1, width=1)
+buttonplus = Button(window, text="+", command=rechnenplus)
 buttonplus.pack(fill=BOTH)
 
 buttonminus = Button(window, text="-", command=rechnenminus, height=1, width=1)
@@ -68,12 +67,13 @@ buttonmal.pack(fill=BOTH)
 buttongeteilt = Button(window, text="/", command=rechnengeteilt, height=1, width=1)
 buttongeteilt.pack(fill=BOTH)
 
-eingabey = Entry(window) 
+eingabey = Entry(window)
 eingabey.pack(fill=BOTH)
 
-text2 = Label (window, text="=") 
+text2 = Label (window, text="=")
 text2.pack()
 
 label1 =  Label (text="Ausgabe") 
+label1.pack()
 
 window.mainloop()
