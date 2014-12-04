@@ -74,6 +74,6 @@ eingabey.pack(fill=BOTH)
 text2 = Label (window, text="=") 
 text2.pack()
 
-label1 =  Label (text="Summe") 
+label1 =  Label (text="Ausgabe") 
 
 window.mainloop()
