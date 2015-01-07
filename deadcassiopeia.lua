@@ -39,6 +39,7 @@ m:addSubMenu("Combo Settings", "combosettings")
 m.combosettings:addParam("useq", "Use Q", SCRIPT_PARAM_ONOFF, true)
 m.combosettings:addParam("usew", "Use W", SCRIPT_PARAM_ONOFF, true)
 m.combosettings:addParam("usee", "Use E", SCRIPT_PARAM_ONOFF, true)
+m.combosettings:addParam("useonly", "Use W only if Q missed", SCRIPT_PARAM_ONOFF, true)
 m:addSubMenu("Harass Settings", "harasssettings")
 m.harasssettings:addParam("usehq", "Use Q", SCRIPT_PARAM_ONOFF, true)
 m.harasssettings:addParam("usehw", "Use W", SCRIPT_PARAM_ONOFF, true)
@@ -98,11 +99,20 @@ function CastPreQ(unit)
   	end
 end
 
-function CastPreW(unit) 
-	local CastPosition, HitChance, Position = VP:GetCircularAOECastPosition(target, 0.5, 90, 925, 2500, myHero)
+function CastPreW(unit)
+	if m.combosettings.useonly then
+		if myHero:GetSpellData(_Q).currentCd > 0 and not PoisN(target) then
+			local CastPosition, HitChance, Position = VP:GetCircularAOECastPosition(target, 0.5, 90, 925, 2500, myHero)
+			if HitChance >= 2 then
+	  		CastSpell(_W, CastPosition.x, CastPosition.z)
+	  		end
+	  	end
+	else 
+		local CastPosition, HitChance, Position = VP:GetCircularAOECastPosition(target, 0.5, 90, 925, 2500, myHero)
 		if HitChance >= 2 then
-  		CastSpell(_W, CastPosition.x, CastPosition.z)
-  	end
+	  	CastSpell(_W, CastPosition.x, CastPosition.z)
+	  	end
+	end
 end
 
 function cassdmg(spell, object)
