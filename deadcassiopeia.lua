@@ -1,20 +1,3 @@
---[[
- _                _ _      _____              _                  _       
-| |              (_) |    / ____|            (_)                (_)      
-| |     ___  __ _ _| |_  | |     __ _ ___ ___ _  ___  _ __   ___ _  __ _ 
-| |    / _ \/ _` | | __| | |    / _` / __/ __| |/ _ \| '_ \ / _ \ |/ _` |
-| |___|  __/ (_| | | |_  | |___| (_| \__ \__ \ | (_) | |_) |  __/ | (_| |
-|______\___|\__, |_|\__|  \_____\__,_|___/___/_|\___/| .__/ \___|_|\__,_|
-             __/ |                                   | |                 
-            |___/                                    |_|                 
-
-Little gimmick script by DeadDevil2. Enjoy!
-
-Chanelog:
-v1.0 inital release
-]]
-
-
 if myHero.charName ~= "Cassiopeia" then
 return
 end
@@ -23,7 +6,7 @@ require 'VPrediction'
 
 local version = 1.0
 local AUTOUPDATE = true
-local SCRIPT_NAME = "LegitCassiopeia"
+local SCRIPT_NAME = "deadcassiopeia"
 local HWID
 local ID
 local id
@@ -31,7 +14,6 @@ local Edelay, orbwalk, check = true, true, true
 local VP = nil
 local SOURCELIB_URL = "https://raw.github.com/TheRealSource/public/master/common/SourceLib.lua"
 local SOURCELIB_PATH = LIB_PATH.."SourceLib.lua"
-
 
 if FileExist(SOURCELIB_PATH) then
     require("SourceLib")
@@ -45,24 +27,14 @@ if DOWNLOADING_SOURCELIB then print("Downloading required libraries, please wait
 local RequireI = Require("SourceLib")
 RequireI:Check()
 
-
 if AUTOUPDATE then
      SourceUpdater(SCRIPT_NAME, version, "raw.github.com", "/dd2repo/BoL/master/"..SCRIPT_NAME..".lua", SCRIPT_PATH .. GetCurrentEnv().FILE_NAME, "/dd2repo/BoL/master/"..SCRIPT_NAME..".version"):CheckUpdate()
 end
 
---[[
-  ____          _                     _ 
- / __ \        | |                   | |
-| |  | |_ __   | |     ___   __ _  __| |
-| |  | | '_ \  | |    / _ \ / _` |/ _` |
-| |__| | | | | | |___| (_) | (_| | (_| |
- \____/|_| |_| |______\___/ \__,_|\__,_|
- ]]
-
 function OnLoad()
 ts = TargetSelector(TARGET_LESS_CAST_PRIORITY,950)
 VP = VPrediction()
-m = scriptConfig("Legit Cassiopeia", "Legitcassiopeia")
+m = scriptConfig("DEADSERIES - CASSIOPEIA", "deadcassiopeia")
 m:addSubMenu("Combo Settings", "combosettings")
 m.combosettings:addParam("useq", "Use Q", SCRIPT_PARAM_ONOFF, true)
 m.combosettings:addParam("usew", "Use W", SCRIPT_PARAM_ONOFF, true)
@@ -90,17 +62,8 @@ m:addParam("combokey", "Combo", SCRIPT_PARAM_ONKEYDOWN, false, 32)
 m:addParam("harass", "Toogle Auto Harass", SCRIPT_PARAM_ONKEYTOGGLE, false, string.byte("C"))
 m:addTS(ts)
 ts.name = "Legit"
-PrintChat ("<font color='#4ECB65'>Legit Cassiopeia v1.0 by DeadDevil2 Loaded! </font>")
+PrintChat ("<font color='#4ECB65'>DEADSERIES - CASSIOPEIA LOADED!</font>")
 end
-
---[[
-  ____          _______ _      _    
- / __ \        |__   __(_)    | |   
-| |  | |_ __      | |   _  ___| | __
-| |  | | '_ \     | |  | |/ __| |/ /
-| |__| | | | |    | |  | | (__|   < 
- \____/|_| |_|    |_|  |_|\___|_|\_\
-]]       
 
 function OnTick()
 	checks()
@@ -111,7 +74,6 @@ function OnTick()
 	autozhonya()
 end
 
-
 function checks()
 	ts:update()
 	Qready = (myHero:CanUseSpell(_Q) == READY)
@@ -120,14 +82,7 @@ function checks()
 	Rready = (myHero:CanUseSpell(_R) == READY)
 	target = ts.target
 end
---[[
- _____              _              _____ _               _        
-|  __ \            (_)            / ____| |             | |       
-| |__) |_ _ ___ ___ ___   _____  | |    | |__   ___  ___| | _____ 
-|  ___/ _` / __/ __| \ \ / / _ \ | |    | '_ \ / _ \/ __| |/ / __|
-| |  | (_| \__ \__ \ |\ V /  __/ | |____| | | |  __/ (__|   <\__ \
-|_|   \__,_|___/___/_| \_/ \___|  \_____|_| |_|\___|\___|_|\_\___/
-]]
+   
 function PoisN(unit)
  return TargetHaveBuff('cassiopeianoxiousblastpoison', unit)
 end
@@ -178,16 +133,6 @@ function autokill()
 	end
 end
 
-
---[[
-  _____                _           
- / ____|              | |          
-| |     ___  _ __ ___ | |__   ___  
-| |    / _ \| '_ ` _ \| '_ \ / _ \ 
-| |___| (_) | | | | | | |_) | (_) |
- \_____\___/|_| |_| |_|_.__/ \___/ 
- ]]   
-
 function Combo()
 	if not target then return
 	end   
@@ -220,24 +165,12 @@ function Combo()
   	end	
 end
 
-
 function autozhonya()
 	if m.items.enableautozhonya then
 		if myHero.health <= (myHero.maxHealth * m.items.autozhonya / 100) then CastItem(3157) 
 		end
 	end
 end
-
-
---[[	
- _                             
-| |                            
-| |__   __ _ _ __ __ _ ___ ___ 
-| '_ \ / _` | '__/ _` / __/ __|
-| | | | (_| | | | (_| \__ \__ \
-|_| |_|\__,_|_|  \__,_|___/___/
-
- ]] 
 
 function Harass()
 	if not target then return
@@ -258,16 +191,14 @@ function walk()
 	end
 end
 
-
 function OnDraw()
-if m.draws.drawq then
-	DrawCircle(myHero.x, myHero.y, myHero.z, 925, ARGB(255, 255, 255, 255))
+	if m.draws.drawq then
+		DrawCircle(myHero.x, myHero.y, myHero.z, 925, ARGB(255, 255, 255, 255))
+	end
+	if m.draws.drawe then
+		DrawCircle(myHero.x, myHero.y, myHero.z, 690, ARGB(255, 255, 255, 255))
+	end
+	if m.draws.drawr then
+		DrawCircle(myHero.x, myHero.y, myHero.z, 850, ARGB(255, 255, 255, 255))
+	end
 end
-if m.draws.drawe then
-	DrawCircle(myHero.x, myHero.y, myHero.z, 690, ARGB(255, 255, 255, 255))
-end
-if m.draws.drawr then
-	DrawCircle(myHero.x, myHero.y, myHero.z, 850, ARGB(255, 255, 255, 255))
-end
-end
-
