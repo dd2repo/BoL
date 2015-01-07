@@ -4,13 +4,13 @@ end
 
 require 'VPrediction'
 
-local version = 1.0
+local version = 1.3
 local AUTOUPDATE = true
 local SCRIPT_NAME = "deadcassiopeia"
 local HWID
 local ID
 local id
-local Edelay, orbwalk, check = true, true, true
+local Edelay, Wdelay, orbwalk, check = true, true, true, true
 local VP = nil
 local SOURCELIB_URL = "https://raw.github.com/TheRealSource/public/master/common/SourceLib.lua"
 local SOURCELIB_PATH = LIB_PATH.."SourceLib.lua"
@@ -34,12 +34,13 @@ end
 function OnLoad()
 ts = TargetSelector(TARGET_LESS_CAST_PRIORITY,950)
 VP = VPrediction()
-m = scriptConfig("DEADSERIES - CASSIOPEIA", "deadcassiopeia")
+m = scriptConfig("Deadseries - Cassiopeia", "deadcassiopeia")
+Ignite = (myHero:GetSpellData(SUMMONER_1).name:find("summonerdot") and SUMMONER_1) or (myHero:GetSpellData(SUMMONER_2).name:find("summonerdot") and SUMMONER_2) or nil
 m:addSubMenu("Combo Settings", "combosettings")
 m.combosettings:addParam("useq", "Use Q", SCRIPT_PARAM_ONOFF, true)
 m.combosettings:addParam("usew", "Use W", SCRIPT_PARAM_ONOFF, true)
 m.combosettings:addParam("usee", "Use E", SCRIPT_PARAM_ONOFF, true)
-m.combosettings:addParam("useonly", "Use W only if Q missed", SCRIPT_PARAM_ONOFF, true)
+m.combosettings:addParam("useonly", "Use delayed W", SCRIPT_PARAM_ONOFF, true)
 m:addSubMenu("Harass Settings", "harasssettings")
 m.harasssettings:addParam("usehq", "Use Q", SCRIPT_PARAM_ONOFF, true)
 m.harasssettings:addParam("usehw", "Use W", SCRIPT_PARAM_ONOFF, true)
@@ -57,31 +58,32 @@ m.draws:addParam("drawq", "Draw Q & W range", SCRIPT_PARAM_ONOFF, false)
 m.draws:addParam("drawe", "Draw E range", SCRIPT_PARAM_ONOFF, false)
 m.draws:addParam("drawr", "Draw R range", SCRIPT_PARAM_ONOFF, false)
 m:addSubMenu("Kill Steal", "ks")
+m.ks:addParam("ignite", "Use Ignite", SCRIPT_PARAM_ONOFF, true)
 m.ks:addParam("kse", "KS with E", SCRIPT_PARAM_ONOFF, false)
 m.ks:addParam("ksr", "KS with R", SCRIPT_PARAM_ONOFF, false)
 m:addParam("combokey", "Combo", SCRIPT_PARAM_ONKEYDOWN, false, 32)
 m:addParam("harass", "Toogle Auto Harass", SCRIPT_PARAM_ONKEYTOGGLE, false, string.byte("C"))
 m:addTS(ts)
 ts.name = "Legit"
-PrintChat ("<font color='#4ECB65'>DEADSERIES - CASSIOPEIA LOADED!</font>")
+PrintChat ("<font color='#4ECB65'>Deadseries - Cassiopeia loaded!</font>")
 end
 
 function OnTick()
-	checks()
-	Combo()
-	walk()
-	autokill()
-	Harass()
-	autozhonya()
+checks()
+Combo()
+walk()
+autokill()
+Harass()
+autozhonya()
 end
 
 function checks()
-	ts:update()
-	Qready = (myHero:CanUseSpell(_Q) == READY)
-	Wready = (myHero:CanUseSpell(_W) == READY)
-	Eready = (myHero:CanUseSpell(_E) == READY)
-	Rready = (myHero:CanUseSpell(_R) == READY)
-	target = ts.target
+ts:update()
+Qready = (myHero:CanUseSpell(_Q) == READY)
+Wready = (myHero:CanUseSpell(_W) == READY)
+Eready = (myHero:CanUseSpell(_E) == READY)
+Rready = (myHero:CanUseSpell(_R) == READY)
+target = ts.target
 end
    
 function PoisN(unit)
@@ -100,18 +102,9 @@ function CastPreQ(unit)
 end
 
 function CastPreW(unit)
-	if m.combosettings.useonly then
-		if myHero:GetSpellData(_Q).currentCd > 0 and not PoisN(target) then
-			local CastPosition, HitChance, Position = VP:GetCircularAOECastPosition(target, 0.5, 90, 925, 2500, myHero)
-			if HitChance >= 2 then
-	  		CastSpell(_W, CastPosition.x, CastPosition.z)
-	  		end
-	  	end
-	else 
-		local CastPosition, HitChance, Position = VP:GetCircularAOECastPosition(target, 0.5, 90, 925, 2500, myHero)
-		if HitChance >= 2 then
-	  	CastSpell(_W, CastPosition.x, CastPosition.z)
-	  	end
+	local CastPosition, HitChance, Position = VP:GetCircularAOECastPosition(target, 0.5, 90, 925, 2500, myHero)
+	if HitChance >= 2 then
+	  CastSpell(_W, CastPosition.x, CastPosition.z)
 	end
 end
 
@@ -128,6 +121,8 @@ end
 function autokill()
 	for i, enemy in ipairs(GetEnemyHeroes()) do
 	 if enemy and not enemy.dead then
+	 		if Ignite ~= nil and m.ks.ignite and enemy.health < getDmg("IGNITE", enemy, myHero) and ValidTarget(enemy, 600) then CastSpell(Ignite, enemy)
+	 		end
 			local dist = GetDistance(enemy)
 			local edmg = cassdmg("e", enemy)
 			local rdmg = cassdmg("r", enemy)
@@ -150,8 +145,12 @@ function Combo()
 		if Qready and m.combosettings.useq and target then
 			CastPreQ(target)
   		end
-  		if Wready and m.combosettings.usew and target then
-			CastPreW(target)
+  		if m.combosettings.useonly and Wdelay and Wready and m.combosettings.usew and target then
+ 			Wdelay = false
+  			DelayAction(function() Wdelay = true end, 1)
+  			CastPreW(target)
+  		elseif not m.combosettings.useonly and Wready and m.combosettings.usew and target then
+  			CastPreW(target)
   		end
 		if m.legit.lmode then
 			if m.legit.stutter and Eready and target and GetDistance(target) < 690 and m.combosettings.usee and Edelay and (PoisM(target) or PoisN(target)) then
