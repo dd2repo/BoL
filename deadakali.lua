@@ -2,14 +2,13 @@ if myHero.charName ~= "Akali" then
 return
 end
 
-require 'SOW'
-require 'Vprediction'
+require 'SxOrbWalk'
 
 local selectedTar = nil
 local VP = nil
-local version = 1.1
+local version = 1.2
 local AUTOUPDATE = true
-local SCRIPT_NAME = "deadakali"
+local SCRIPT_NAME = "d2akali"
 local SOURCELIB_URL = "https://raw.github.com/TheRealSource/public/master/common/SourceLib.lua"
 local SOURCELIB_PATH = LIB_PATH.."SourceLib.lua"
 
@@ -36,9 +35,8 @@ end
 
 function Vars()
 ts = TargetSelector(TARGET_LESS_CAST_PRIORITY,900)
-m = scriptConfig("[Deadseries] - [Akali v1.1]", "deadakali")
-VP = VPrediction()
-sow = SOW(VP)
+m = scriptConfig("[D2 Akali v1.2]", "d2akali")
+orb = SxOrb
 Ignite = (myHero:GetSpellData(SUMMONER_1).name:find("summonerdot") and SUMMONER_1) or (myHero:GetSpellData(SUMMONER_2).name:find("summonerdot") and SUMMONER_2) or nil
 end
 
@@ -74,16 +72,15 @@ m:addParam("combokey", "Combo", SCRIPT_PARAM_ONKEYDOWN, false, 32)
 m:addParam("magnet", "Meele Magnet", SCRIPT_PARAM_ONOFF, true)
 m:addParam("target", "Left click target selection", SCRIPT_PARAM_ONOFF, true)
 m:addSubMenu("Orbwalker", "orbwalk")
-sow:LoadToMenu(m.orbwalk)
+orb:LoadToMenu(m.orbwalk)
 m:addTS(ts)
 ts.name = "Selection"
-PrintChat ("<font color='#F20000'>[Deadseries] - [Akali v1.1] loaded!</font>")
-PrintChat ("<font color='#F20000'>If you have problems with aa cancel disable meele magnet!</font>")
+PrintChat ("<font color='#F20000'>[D2 Akali v1.2] loaded!</font>")
 end
 
 function OnTick()
 checks()
-targetmagnet()
+--targetmagnet()
 Killsteal()
 Combo()
 CST()
@@ -226,7 +223,7 @@ function Killsteal()
         end
     end 
 end
-
+--[[
 function targetmagnet()
     if m.combokey and target and ValidTarget(target, 300) and m.magnet then
         local dist = GetDistanceSqr(target)
@@ -245,15 +242,15 @@ function stayclose(unit, mode)
         local orbwalkPoint1 = targetVector + (myVector-targetVector):normalized()*100
         local orbwalkPoint2 = targetVector - (myVector-targetVector):normalized()*100
         if GetDistanceSqr(orbwalkPoint1) < GetDistanceSqr(orbwalkPoint2) then
-            sow:OrbWalk(unit, orbwalkPoint1)
+            orb:OrbWalk(unit, orbwalkPoint1)
         else
-            sow:OrbWalk(unit, orbwalkPoint2)
+            orb:OrbWalk(unit, orbwalkPoint2)
         end
     else
-        sow:OrbWalk(unit, myHero)
+        orb:OrbWalk(unit, myHero)
     end
 end
-
+]]
 function CST()
     local Target = nil
     if selectedTar then Target = selectedTar
