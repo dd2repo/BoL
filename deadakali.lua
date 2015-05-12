@@ -7,7 +7,7 @@ require 'Vprediction'
 
 local selectedTar = nil
 local VP = nil
-local version = 1.0
+local version = 1.1
 local AUTOUPDATE = true
 local SCRIPT_NAME = "deadakali"
 local SOURCELIB_URL = "https://raw.github.com/TheRealSource/public/master/common/SourceLib.lua"
@@ -36,7 +36,7 @@ end
 
 function Vars()
 ts = TargetSelector(TARGET_LESS_CAST_PRIORITY,900)
-m = scriptConfig("[Deadseries] - [Akali v1.0]", "deadakali")
+m = scriptConfig("[Deadseries] - [Akali v1.1]", "deadakali")
 VP = VPrediction()
 sow = SOW(VP)
 Ignite = (myHero:GetSpellData(SUMMONER_1).name:find("summonerdot") and SUMMONER_1) or (myHero:GetSpellData(SUMMONER_2).name:find("summonerdot") and SUMMONER_2) or nil
@@ -49,8 +49,8 @@ m.combosettings:addParam("usee", "Use E", SCRIPT_PARAM_ONOFF, true)
 m.combosettings:addParam("user", "Use R", SCRIPT_PARAM_ONOFF, true)
 m.combosettings:addParam("logic", "Combo logic", SCRIPT_PARAM_LIST, 1, {"Spam everything", "Only E if Q is on target", "Force R > Q > E" })
 m:addSubMenu("Item Settings", "items")
-m.items:addParam("usedfg", "Use Deathfire Grasp", SCRIPT_PARAM_ONOFF, true)
-m.items:addParam("usebt", "Use Blackfire Torch", SCRIPT_PARAM_ONOFF, true)
+m.items:addParam("usedfg", "RIP Deathfire Grasp", SCRIPT_PARAM_ONOFF, true)
+m.items:addParam("usebt", "RIP Blackfire Torch", SCRIPT_PARAM_ONOFF, true)
 m.items:addParam("usehg", "Use Hextech Gunblade", SCRIPT_PARAM_ONOFF, true)
 m.items:addParam("usebc", "Use Bilgewater Cutlass", SCRIPT_PARAM_ONOFF, true)
 m.items:addParam("logic", "Item logic", SCRIPT_PARAM_LIST, 1, {"Combo", "Always" })
@@ -77,7 +77,7 @@ m:addSubMenu("Orbwalker", "orbwalk")
 sow:LoadToMenu(m.orbwalk)
 m:addTS(ts)
 ts.name = "Selection"
-PrintChat ("<font color='#F20000'>[Deadseries] - [Akali v1.0] loaded!</font>")
+PrintChat ("<font color='#F20000'>[Deadseries] - [Akali v1.1] loaded!</font>")
 PrintChat ("<font color='#F20000'>If you have problems with aa cancel disable meele magnet!</font>")
 end
 
@@ -154,8 +154,6 @@ function Items()
     if ValidTarget(target) and m.combokey then
         local tdis = GetDistance(target)
         if Qready or (m.items.logic == 1 and (Eready or Qready or Rready)) then
-            if m.items.usedfg and tdis < 750 then CastItem(3128, target) end
-            if m.items.usebt and tdis < 750 then CastItem(3188, target) end
             if m.items.usehg and tdis < 700 then CastItem(3146, target) end
             if m.items.usebc and tdis < 700 then CastItem(3144, target) end
         end
