@@ -2,14 +2,13 @@ if myHero.charName ~= "MonkeyKing" then
 return
 end
 
-require 'SOW'
-require 'Vprediction'
+require 'SxOrbWalk'
 
 local selectedTar = nil
 local VP = nil
-local version = 1.0
+local version = 1.1
 local AUTOUPDATE = true
-local SCRIPT_NAME = "deadwukong"
+local SCRIPT_NAME = "d2wukong"
 local selectedTar = nil
 local SOURCELIB_URL = "https://raw.github.com/TheRealSource/public/master/common/SourceLib.lua"
 local SOURCELIB_PATH = LIB_PATH.."SourceLib.lua"
@@ -34,11 +33,10 @@ end
 
 function OnLoad()
 ts = TargetSelector(TARGET_LESS_CAST_PRIORITY,315)
-m = scriptConfig("DEADSERIES - WUKONG", "deadwukong")
-VP = VPrediction()
-sow = SOW(VP)
-sow:RegisterAfterAttackCallback(hydra)
---sow:RegisterOnAttackCallback(CastQ)
+m = scriptConfig("[D2 Wukong v1.1]", "d2wukong")
+orb = SxOrb
+orb:RegisterAfterAttackCallback(hydra)
+--orb:RegisterOnAttackCallback(CastQ)
 Ignite = (myHero:GetSpellData(SUMMONER_1).name:find("summonerdot") and SUMMONER_1) or (myHero:GetSpellData(SUMMONER_2).name:find("summonerdot") and SUMMONER_2) or nil
 
 m:addSubMenu("Combo Settings", "combosettings")
@@ -60,14 +58,15 @@ m.draws:addParam("drawe", "Draw E range", SCRIPT_PARAM_ONOFF, false)
 m.draws:addParam("drawr", "Draw R range", SCRIPT_PARAM_ONOFF, false)
 
 m:addParam("combokey", "Combo", SCRIPT_PARAM_ONKEYDOWN, false, 32)
-m:addParam("magnet", "Meele Magnet", SCRIPT_PARAM_ONOFF, true)
+--m:addParam("magnet", "Meele Magnet", SCRIPT_PARAM_ONOFF, true)
 m:addParam("target", "Left Click Target Selection", SCRIPT_PARAM_ONOFF, true)
 
 m:addSubMenu("Orbwalker", "orbwalk")
-sow:LoadToMenu(m.orbwalk)
+orb:LoadToMenu(m.orbwalk)
 m:addTS(ts)
 ts.name = "Selection"
-PrintChat ("<font color='#00BCFF'>DEADSERIES - WUKONG LOADED!</font>")
+
+PrintChat ("<font color='#00BCFF'>[D2 Wukong v1.1] loaded!</font>")
 end
 
 function OnGainBuff(unit, buff)
@@ -82,9 +81,27 @@ function OnLoseBuff(unit, buff)
     end
 end
 
+function OnCreateObj(object)
+    if object.name == 'MonkeyKing_Base_R_Cas_Glow.troy' then
+        usingult2 = true
+    end
+    if object.name == 'MonkeyKing_Base_R_Cas.troy' then
+        usingult3 = true
+    end
+end
+
+function OnDeleteObj(object)
+    if object.name == 'MonkeyKing_Base_R_Cas_Glow.troy' then
+        usingult2 = false
+    end
+    if object.name == 'MonkeyKing_Base_R_Cas.troy' then
+        usingult3 = false
+    end
+end
+
 function OnTick()
 checks()
-targetmagnet()
+--targetmagnet()
 checks()
 Killsteal()
 CastQ()
@@ -114,7 +131,7 @@ function CountEnemyHeroInRange(range)
 end 
 
 function Autoult()
-    if m.ultimatesettings.useau and not usingult then
+    if m.ultimatesettings.useau and not (usingult or usingult2 or usingult3) then
         if m.ultimatesettings.auv == 1 then
             if CountEnemyHeroInRange(315) >= 2 then
                 CastSpell(_R)
@@ -141,7 +158,7 @@ function hydra()
 end
 
 function CastQ()
-    if not usingult then
+    if not (usingult or usingult2 or usingult3) then
         if m.combokey and Qready and m.combosettings.useq and target and ValidTarget(target, 290) and GetDistance(target) <= 290 then
             CastSpell(_Q)
         end
@@ -149,7 +166,7 @@ function CastQ()
 end
 
 function CastE()
-    if not usingult then
+    if not (usingult or usingult2 or usingult3) then
         if m.combokey and Eready then
             ts.range = 620
             ts:update()
@@ -166,13 +183,13 @@ function Killsteal()
     for _, enemy in pairs(GetEnemyHeroes()) do
         if Ignite ~= nil and m.ks.ignite and enemy.health < getDmg("IGNITE", enemy, myHero) and ValidTarget(enemy, 600) then CastSpell(Ignite, enemy)
         end
-        if ValidTarget(enemy, 315) and m.ks.user and not usingult then
+        if ValidTarget(enemy, 315) and m.ks.user and not (usingult or usingult2 or usingult3) then
             local RDmg = getDmg('R', enemy, myHero) or 0
             if Rready and enemy.health <= RDmg*4 then
                 CastSpell(_R)
             end
         end
-        if m.ks.usee and ValidTarget(enemy, 610) then
+        if m.ks.usee and ValidTarget(enemy, 610) and not (usingult or usingult2 or usingult3) then
             local EDmg = getDmg('E', enemy, myHero) or 0
             if Eready and enemy.health <= EDmg then
                 CastSpell(_E, enemy)
@@ -181,6 +198,7 @@ function Killsteal()
     end 
 end
 
+--[[
 function targetmagnet()
     if m.combokey and target and ValidTarget(target, 300) and m.magnet then
     local dist = GetDistanceSqr(target)
@@ -199,15 +217,15 @@ function stayclose(unit, mode)
         local orbwalkPoint1 = targetVector + (myVector-targetVector):normalized()*100
         local orbwalkPoint2 = targetVector - (myVector-targetVector):normalized()*100
         if GetDistanceSqr(orbwalkPoint1) < GetDistanceSqr(orbwalkPoint2) then
-            sow:OrbWalk(unit, orbwalkPoint1)
+            orb:OrbWalk(unit, orbwalkPoint1)
         else
-            sow:OrbWalk(unit, orbwalkPoint2)
+            orb:OrbWalk(unit, orbwalkPoint2)
         end
     else
-        sow:OrbWalk(unit, myHero)
+        orb:OrbWalk(unit, myHero)
     end
 end
-
+]]
 function CST()
     local Target = nil
     if selectedTar then Target = selectedTar
