@@ -7,7 +7,7 @@ require 'HPrediction'
 require 'VPrediction'
 
 local ignite = nil
-local version = 1.00
+local version = 1.1
 local AUTOUPDATE = true
 local SCRIPT_NAME = "NoscopeNidaleeReborn"
 local SOURCELIB_URL = "https://raw.github.com/TheRealSource/public/master/common/SourceLib.lua"
@@ -46,8 +46,8 @@ function OnLoad()
 end
 
 function vars()
-	ts 		= TargetSelector(TARGET_LESS_CAST_PRIORITY,0)
-	VP 		= VPrediction()
+	ts 	= TargetSelector(TARGET_LESS_CAST_PRIORITY,0)
+	VP 	= VPrediction()
 	HPred 	= HPrediction()
 	hunting = false
 	cougar 	= false
@@ -56,7 +56,7 @@ function vars()
 end
 
 function menu()
-	m = scriptConfig("[Noscope Nidalee Reborn v1.0]", "Noscopenidaleereborn")
+	m = scriptConfig("[Noscope Nidalee Reborn v1.1]", "Noscopenidaleereborn")
 	m:addSubMenu("Combo Manager", "combosettings")
 	m.combosettings:addSubMenu("Humanform Combo", "humancombo")
 	m.combosettings.humancombo:addParam("usehq", "Use Q", SCRIPT_PARAM_ONOFF, true)
@@ -127,7 +127,7 @@ function menu()
 	m:addParam("combokey", "Combo", SCRIPT_PARAM_ONKEYDOWN, false, 32)
 	m:addParam("escapekey", "Escape", SCRIPT_PARAM_ONKEYDOWN, false, 88)
 	m:addParam("harass", "Toogle Auto Harass with Spears", SCRIPT_PARAM_ONKEYTOGGLE, false, string.byte("C"))
-	PrintChat ("<font color='#FF9A00'>[Noscope Nidalee Reborn v1.0] by DeadDevil2 Loaded! </font>")
+	PrintChat ("<font color='#FF9A00'>[Noscope Nidalee Reborn v1.1] by DeadDevil2 Loaded! </font>")
 end
 
 function OnTick()
@@ -173,12 +173,6 @@ function escape()
 			CastSpell(_R)
 		end
 	end
-end
-
-function OnApplyBuff(unit, source, buff)
-    if not unit.isMe and unit.type == myHero.type and unit.team ~= myHero.team then
-        print(buff.name)
-    end
 end
 
 --[[
