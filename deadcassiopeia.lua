@@ -3,10 +3,12 @@ return
 end
 
 require 'VPrediction'
+require 'HPrediction'
+require 'SxOrbWalk'
 
-local version = 1.3
+local version = 1.4
 local AUTOUPDATE = true
-local SCRIPT_NAME = "deadcassiopeia"
+local SCRIPT_NAME = "d2cassiopeia"
 local HWID
 local ID
 local id
@@ -34,7 +36,8 @@ end
 function OnLoad()
 ts = TargetSelector(TARGET_LESS_CAST_PRIORITY,950)
 VP = VPrediction()
-m = scriptConfig("Deadseries - Cassiopeia", "deadcassiopeia")
+HPred = HPrediction()
+m = scriptConfig("[D2 Cassiopeia v1.4]", "[d2cassiopeia]")
 Ignite = (myHero:GetSpellData(SUMMONER_1).name:find("summonerdot") and SUMMONER_1) or (myHero:GetSpellData(SUMMONER_2).name:find("summonerdot") and SUMMONER_2) or nil
 m:addSubMenu("Combo Settings", "combosettings")
 m.combosettings:addParam("useq", "Use Q", SCRIPT_PARAM_ONOFF, true)
@@ -47,7 +50,7 @@ m.harasssettings:addParam("usehw", "Use W", SCRIPT_PARAM_ONOFF, true)
 m.harasssettings:addParam("mana", "Stop Harass if Mana under -> %", SCRIPT_PARAM_SLICE, 10, 0, 100, 0)
 m:addSubMenu("Legit Settings", "legit")
 m.legit:addParam("lmode", "Legit Mode", SCRIPT_PARAM_ONKEYTOGGLE, false, string.byte("N"))
-m.legit:addParam("orbing", "Orbwalking", SCRIPT_PARAM_ONOFF, true)
+--m.legit:addParam("orbing", "Orbwalking", SCRIPT_PARAM_ONOFF, true)
 m.legit:addParam("stutter", "Stutterstep after every E", SCRIPT_PARAM_ONOFF, false)
 m.legit:addParam("edelaym", "Delay between E's", SCRIPT_PARAM_SLICE, 1, 0.5, 2, 2)
 m:addSubMenu("Item Settings", "items")
@@ -63,15 +66,18 @@ m.ks:addParam("kse", "KS with E", SCRIPT_PARAM_ONOFF, false)
 m.ks:addParam("ksr", "KS with R", SCRIPT_PARAM_ONOFF, false)
 m:addParam("combokey", "Combo", SCRIPT_PARAM_ONKEYDOWN, false, 32)
 m:addParam("harass", "Toogle Auto Harass", SCRIPT_PARAM_ONKEYTOGGLE, false, string.byte("C"))
+m:addParam("prediction", "Choose Prediction", SCRIPT_PARAM_LIST, 1, {"VPrediction", "HPrediction" })
 m:addTS(ts)
+m:addSubMenu("Orbwalker", "orbwalk")
+SxOrb:LoadToMenu(m.orbwalk)
 ts.name = "Legit"
-PrintChat ("<font color='#4ECB65'>Deadseries - Cassiopeia loaded!</font>")
+PrintChat ("<font color='#F20000'>[D2 Cassiopeia v1.4] loaded!</font>")
 end
 
 function OnTick()
 checks()
 Combo()
-walk()
+--walk()
 autokill()
 Harass()
 autozhonya()
@@ -94,15 +100,29 @@ function PoisM(unit)
  return TargetHaveBuff('cassiopeiamiasmapoison', unit)
 end
 
+function CastHQ(unit)
+	local QPos, QHitChance = HPred:GetPredict("Q", unit, myHero)
+	if QHitChance >= 2 then
+		CastSpell(_Q, QPos.x, QPos.z)
+	end
+end
+
+function CastHW(unit)
+	local WPos, WHitChance = HPred:GetPredict("W", unit, myHero)
+	if WHitChance >= 2 then
+		CastSpell(_W, WPos.x, WPos.z)
+	end
+end
+
 function CastPreQ(unit)
-	local CastPosition, HitChance, Position = VP:GetCircularCastPosition(target, 0.5, 90, 925, 1800, myHero)
-		if HitChance >= 2 then
+	local CastPosition, HitChance, Position = VP:GetCircularCastPosition(unit, 0.5, 90, 925, 1800, myHero)
+	if HitChance >= 2 then
   		CastSpell(_Q, CastPosition.x, CastPosition.z)
   	end
 end
 
 function CastPreW(unit)
-	local CastPosition, HitChance, Position = VP:GetCircularAOECastPosition(target, 0.5, 90, 925, 2500, myHero)
+	local CastPosition, HitChance, Position = VP:GetCircularAOECastPosition(unit, 0.5, 90, 925, 2500, myHero)
 	if HitChance >= 2 then
 	  CastSpell(_W, CastPosition.x, CastPosition.z)
 	end
@@ -120,18 +140,18 @@ end
 
 function autokill()
 	for i, enemy in ipairs(GetEnemyHeroes()) do
-	 if enemy and not enemy.dead then
+	 if enemy and not enemy.dead and enemy.visible then
 	 		if Ignite ~= nil and m.ks.ignite and enemy.health < getDmg("IGNITE", enemy, myHero) and ValidTarget(enemy, 600) then CastSpell(Ignite, enemy)
 	 		end
 			local dist = GetDistance(enemy)
 			local edmg = cassdmg("e", enemy)
 			local rdmg = cassdmg("r", enemy)
-			if m.ks.ksr and Rready and Eready and dist < 680 and enemy.health < (edmg+rdmg) then
+			if m.ks.ksr and Rready and Eready and dist < 680 and enemy.health < (edmg+rdmg) and ValidTarget(enemy) then
 				CastSpell(_E, enemy)
 				CastSpell(_R, enemy.x, enemy.z)
-			elseif m.ks.ksr and Rready and dist < 750 and enemy.health < rdmg then
+			elseif m.ks.ksr and Rready and dist < 750 and enemy.health < rdmg and ValidTarget(enemy) then
 				CastSpell(_R, enemy.x, enemy.z)
-			elseif m.ks.kse and Eready and dist < 690 and enemy.health < edmg then
+			elseif m.ks.kse and Eready and dist < 690 and enemy.health < edmg and ValidTarget(enemy) then
 				CastSpell(_E, enemy)
 			end
 		end
@@ -142,36 +162,55 @@ function Combo()
 	if not target then return
 	end   
 	if m.combokey then
-		if Qready and m.combosettings.useq and target then
-			CastPreQ(target)
-  		end
-  		if m.combosettings.useonly and Wdelay and Wready and m.combosettings.usew and target then
- 			Wdelay = false
-  			DelayAction(function() Wdelay = true end, 1)
-  			CastPreW(target)
-  		elseif not m.combosettings.useonly and Wready and m.combosettings.usew and target then
-  			CastPreW(target)
-  		end
+		if myHero:GetSpellData(_E).level >= 1 then
+			if myHero:GetSpellData(_E).currentCd > 0.6 then SxOrb:EnableAttacks()
+			else SxOrb:DisableAttacks()
+			end
+		else SxOrb:EnableAttacks()
+		end
+		if m.prediction == 1 then
+			if Qready and m.combosettings.useq and target then
+				CastPreQ(target)
+		  	end
+		  	if m.combosettings.useonly and Wdelay and Wready and m.combosettings.usew and target then
+		 		Wdelay = false
+		  		DelayAction(function() Wdelay = true end, 1)
+		  		CastPreW(target)
+		  	elseif not m.combosettings.useonly and Wready and m.combosettings.usew and target then
+		  		CastPreW(target)
+		  	end
+		else
+			if Qready and m.combosettings.useq and target then
+				CastHQ(target)
+		  	end
+		  	if m.combosettings.useonly and Wdelay and Wready and m.combosettings.usew and target then
+		 		Wdelay = false
+		  		DelayAction(function() Wdelay = true end, 1)
+		  		CastHW(target)
+		  	elseif not m.combosettings.useonly and Wready and m.combosettings.usew and target then
+		  		CastHW(target)
+		  	end
+		end
 		if m.legit.lmode then
 			if m.legit.stutter and Eready and target and GetDistance(target) < 690 and m.combosettings.usee and Edelay and (PoisM(target) or PoisN(target)) then
-  				Edelay = false
-					orbwalk = false
+	  			Edelay = false
+					SxOrb:DisableMove()
 					if check then 
 						check = false 
-						DelayAction(function() check = true orbwalk = true end, 0.5) 
+						DelayAction(function() check = true SxOrb:EnableMove() end, 0.5) 
 					end
-  				DelayAction(function() Edelay = true end, m.legit.edelaym)
-  				CastSpell(_E, target)
-  			end
-  			if not m.legit.stutter and Eready and target and GetDistance(target) < 690 and m.combosettings.usee and Edelay and (PoisM(target) or PoisN(target)) then
-  				Edelay = false
-  				DelayAction(function() Edelay = true end, m.legit.edelaym)
-  				CastSpell(_E, target)
-  			end
+	  			DelayAction(function() Edelay = true end, m.legit.edelaym)
+	  			CastSpell(_E, target)
+	  		end
+	  		if not m.legit.stutter and Eready and target and GetDistance(target) < 690 and m.combosettings.usee and Edelay and (PoisM(target) or PoisN(target)) then
+	  			Edelay = false
+	  			DelayAction(function() Edelay = true end, m.legit.edelaym)
+	  			CastSpell(_E, target)
+	  		end
 		elseif not m.legit.lmode and Eready and target and GetDistance(target) < 690 and m.combosettings.usee and (PoisM(target) or PoisN(target)) then
-  				CastSpell(_E, target)	
-  		end
-  	end	
+	  			CastSpell(_E, target)	
+	  	end
+	end
 end
 
 function autozhonya()
@@ -193,13 +232,13 @@ function Harass()
   		end
   	end
 end
-
+--[[
 function walk()
-	if m.combokey and m.legit.orbing and orbwalk then
+	if m.combokey and m.legit.orbing and orbwalk and SxOrb:CanMove() then
 		myHero:MoveTo(mousePos.x, mousePos.z)
 	end
 end
-
+]]
 function OnDraw()
 	if m.draws.drawq then
 		DrawCircle(myHero.x, myHero.y, myHero.z, 925, ARGB(255, 255, 255, 255))
