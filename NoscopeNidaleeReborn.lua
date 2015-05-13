@@ -19,7 +19,7 @@ Spells =
 	W 	= 	{range = 900, delay = 0.500, width = 80, speed = 1450},
 	E 	= 	{range = 600},
 	CW 	= 	{range = 375},
-	ECW = 	{range = 750},
+	ECW 	= 	{range = 750},
 	CE 	= 	{range = 300}
 }
 
