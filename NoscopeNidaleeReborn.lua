@@ -2,39 +2,50 @@ if myHero.charName ~= "Nidalee" then
 return
 end
 
-require 'SxOrbWalk'
-require 'HPrediction'
-require 'VPrediction'
-
 local ignite = nil
-local version = 1.1
+local version = 1.2
 local AUTOUPDATE = true
 local SCRIPT_NAME = "NoscopeNidaleeReborn"
 local SOURCELIB_URL = "https://raw.github.com/TheRealSource/public/master/common/SourceLib.lua"
 local SOURCELIB_PATH = LIB_PATH.."SourceLib.lua"
-
-Spells = 	
+local Spells = 	
 {
 	Q 	= 	{range = 1400, delay = 0.125, width = 30, speed = 1300},
 	W 	= 	{range = 900, delay = 0.500, width = 80, speed = 1450},
 	E 	= 	{range = 600},
 	CW 	= 	{range = 375},
-	ECW 	= 	{range = 750},
+	ECW = 	{range = 750},
 	CE 	= 	{range = 300}
 }
 
 if FileExist(SOURCELIB_PATH) then
-    require("SourceLib")
+	require("SourceLib")
 else
     DONLOADING_SOURCELIB = true
     DownloadFile(SOURCELIB_URL, SOURCELIB_PATH, function() print("Required libraries downloaded successfully, please reload") end)
 end
 
+if FileExist(LIB_PATH .. "/VPrediction.lua") then
+	require 'VPrediction'
+else print ("You need to download VPrediction. Loading Script failed..") return end
+--[[
+if VIP_USER and FileExist(LIB_PATH.."DivinePred.lua") and FileExist(LIB_PATH.."DivinePred.luac") then
+	require 'DivinePred'
+	DP = DivinePred()
+else print ("You need to download DivinePred. Loading Script failed..") return end
+]]
+if FileExist(LIB_PATH .. "/HPrediction.lua") then
+	require 'HPrediction'
+else print ("You need to download HPrediction. Loading Script failed..") return end
+
+if FileExist(LIB_PATH .. "/SxOrbWalk.lua") then
+	require 'SxOrbWalk'
+else print ("You need to download SxOrbWalk. Loading Script failed..") return end
+
 if DOWNLOADING_SOURCELIB then print("Downloading required libraries, please wait...") return end
 
 local RequireI = Require("SourceLib")
 RequireI:Check()
-
 
 if AUTOUPDATE then
      SourceUpdater(SCRIPT_NAME, version, "raw.github.com", "/dd2repo/BoL/master/"..SCRIPT_NAME..".lua", SCRIPT_PATH .. GetCurrentEnv().FILE_NAME, "/dd2repo/BoL/master/"..SCRIPT_NAME..".version"):CheckUpdate()
@@ -53,10 +64,11 @@ function vars()
 	cougar 	= false
 	Ignite 	= (myHero:GetSpellData(SUMMONER_1).name:find("summonerdot") and SUMMONER_1) or (myHero:GetSpellData(SUMMONER_2).name:find("summonerdot") and SUMMONER_2) or nil
 	SxOrb:RegisterOnAttackCallback(CastCougarQ)
+	--HPred:AddSpell("Q", 'Nidalee', {type = "DelayLine", range = Q.range, speed = Q.speed, width = 2*Q.width, delay = Q.delay, collisionM = true, collisionH = true})
 end
 
 function menu()
-	m = scriptConfig("[Noscope Nidalee Reborn v1.1]", "Noscopenidaleereborn")
+	m = scriptConfig("[Noscope Nidalee Reborn v1.2]", "Noscopenidaleereborn")
 	m:addSubMenu("Combo Manager", "combosettings")
 	m.combosettings:addSubMenu("Humanform Combo", "humancombo")
 	m.combosettings.humancombo:addParam("usehq", "Use Q", SCRIPT_PARAM_ONOFF, true)
@@ -127,7 +139,7 @@ function menu()
 	m:addParam("combokey", "Combo", SCRIPT_PARAM_ONKEYDOWN, false, 32)
 	m:addParam("escapekey", "Escape", SCRIPT_PARAM_ONKEYDOWN, false, 88)
 	m:addParam("harass", "Toogle Auto Harass with Spears", SCRIPT_PARAM_ONKEYTOGGLE, false, string.byte("C"))
-	PrintChat ("<font color='#FF9A00'>[Noscope Nidalee Reborn v1.1] by DeadDevil2 Loaded! </font>")
+	PrintChat ("<font color='#FF9A00'>[Noscope Nidalee Reborn v1.2] by DeadDevil2 Loaded! </font>")
 end
 
 function OnTick()
@@ -301,8 +313,10 @@ function combo()
 			if Qready and ValidTarget(target, 1400) and target and GetDistance(target) <= 1400 and m.combosettings.humancombo.usehq then
 				if m.vip.prediction == 1 then
 					CastVQ(target)
-				else
+				elseif m.vip.prediction == 2 then
 					CastHQ(target)
+				elseif VIP_USER and m.vip.prediction == 3 then
+					CastDQ(target)
 				end
 			end
 		end
@@ -339,31 +353,31 @@ function Items()
 	if not target then return end
 	if m.combokey and m.items.useitems then 
 		if cougar then
-				if m.items.hg == 2 then CastItem(3146, target) end
-				if m.items.hg == 4 then CastItem(3146, target) end
-				if m.items.yg == 2 then CastItem(3142) end
-				if m.items.yg == 4 then CastItem(3142) end
-				if m.items.blade == 2 then CastItem(3153, target) end
-				if m.items.blade == 4 then CastItem(3153, target) end
-				if m.items.cutlass == 2 then CastItem(3144, target) end
-				if m.items.cutlass == 4 then CastItem(3144, target) end
-				if m.items.sod == 2 then CastItem(3131) end
-				if m.items.sod == 4 then CastItem(3131) end
-				if m.items.fqc == 2 then CastItem(3092, target.x,target.z) end
-				if m.items.fqc == 4 then CastItem(3092, target.x,target.z) end
+			if m.items.hg == 2 then CastItem(3146, target) end
+			if m.items.hg == 4 then CastItem(3146, target) end
+			if m.items.yg == 2 then CastItem(3142) end
+			if m.items.yg == 4 then CastItem(3142) end
+			if m.items.blade == 2 then CastItem(3153, target) end
+			if m.items.blade == 4 then CastItem(3153, target) end
+			if m.items.cutlass == 2 then CastItem(3144, target) end
+			if m.items.cutlass == 4 then CastItem(3144, target) end
+			if m.items.sod == 2 then CastItem(3131) end
+			if m.items.sod == 4 then CastItem(3131) end
+			if m.items.fqc == 2 then CastItem(3092, target.x,target.z) end
+			if m.items.fqc == 4 then CastItem(3092, target.x,target.z) end
 		elseif ValidTarget(target, 525) then
-				if m.items.hg == 3 then CastItem(3146, target) end
-				if m.items.hg == 4 then CastItem(3146, target) end
-				if m.items.yg == 3 then CastItem(3142) end
-				if m.items.yg == 4 then CastItem(3142) end
-				if m.items.blade == 3 then CastItem(3153, target) end
-				if m.items.blade == 4 then CastItem(3153, target) end
-				if m.items.cutlass == 3 then CastItem(3144, target) end
-				if m.items.cutlass == 4 then CastItem(3144, target) end
-				if m.items.sod == 3 then CastItem(3131) end
-				if m.items.sod == 4 then CastItem(3131) end
-				if m.items.fqc == 3 then CastItem(3092, target.x,target.z) end
-				if m.items.fqc == 4 then CastItem(3092, target.x,target.z) end
+			if m.items.hg == 3 then CastItem(3146, target) end
+			if m.items.hg == 4 then CastItem(3146, target) end
+			if m.items.yg == 3 then CastItem(3142) end
+			if m.items.yg == 4 then CastItem(3142) end
+			if m.items.blade == 3 then CastItem(3153, target) end
+			if m.items.blade == 4 then CastItem(3153, target) end
+			if m.items.cutlass == 3 then CastItem(3144, target) end
+			if m.items.cutlass == 4 then CastItem(3144, target) end
+			if m.items.sod == 3 then CastItem(3131) end
+			if m.items.sod == 4 then CastItem(3131) end
+			if m.items.fqc == 3 then CastItem(3092, target.x,target.z) end
+			if m.items.fqc == 4 then CastItem(3092, target.x,target.z) end
 		end
 	end
 end
