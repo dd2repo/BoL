@@ -1,16 +1,29 @@
+--[[
+Scriptname 	= Noscope Nidalee Reborn
+Version 	= 1.3
+Author		= DeadDevil2
+
+ToDo
+- Laneclear & Jungleclear
+- Spear KS
+- DivinePrediction Integration
+]]
+
 if myHero.charName ~= "Nidalee" then
 return
 end
 
 local ignite = nil
-local version = 1.2
+local version = 1.3
 local AUTOUPDATE = true
+local SX = false
+local SAC = false
 local SCRIPT_NAME = "NoscopeNidaleeReborn"
 local SOURCELIB_URL = "https://raw.github.com/TheRealSource/public/master/common/SourceLib.lua"
 local SOURCELIB_PATH = LIB_PATH.."SourceLib.lua"
 local Spells = 	
 {
-	Q 	= 	{range = 1400, delay = 0.125, width = 30, speed = 1300},
+	Q 	= 	{range = 1400, delay = 0.125, width = 40, speed = 1300},
 	W 	= 	{range = 900, delay = 0.500, width = 80, speed = 1450},
 	E 	= 	{range = 600},
 	CW 	= 	{range = 375},
@@ -27,7 +40,7 @@ end
 
 if FileExist(LIB_PATH .. "/VPrediction.lua") then
 	require 'VPrediction'
-else print ("You need to download VPrediction. Loading Script failed..") return end
+else print ("Noscope Nidalee Reborn: You need to download VPrediction. Loading Script failed..") return end
 --[[
 if VIP_USER and FileExist(LIB_PATH.."DivinePred.lua") and FileExist(LIB_PATH.."DivinePred.luac") then
 	require 'DivinePred'
@@ -36,11 +49,7 @@ else print ("You need to download DivinePred. Loading Script failed..") return e
 ]]
 if FileExist(LIB_PATH .. "/HPrediction.lua") then
 	require 'HPrediction'
-else print ("You need to download HPrediction. Loading Script failed..") return end
-
-if FileExist(LIB_PATH .. "/SxOrbWalk.lua") then
-	require 'SxOrbWalk'
-else print ("You need to download SxOrbWalk. Loading Script failed..") return end
+else print ("Noscope Nidalee Reborn: You need to download HPrediction. Loading Script failed..") return end
 
 if DOWNLOADING_SOURCELIB then print("Downloading required libraries, please wait...") return end
 
@@ -52,6 +61,16 @@ if AUTOUPDATE then
 end
 
 function OnLoad()
+	if _G.Reborn_Loaded ~= nil then
+		SAC = true
+		print ("Noscope Nidalee Reborn: SAC Reborn detected.")
+	else SX = true
+		print ("Noscope Nidalee Reborn: SAC cannot be found. Will load SxOrbWalk.")
+		if FileExist(LIB_PATH .. "/SxOrbWalk.lua") then
+			require 'SxOrbWalk'
+		else print ("Noscope Nidalee Reborn: You need to download SxOrbWalk. Loading Script failed..") return 
+		end
+	end
 	vars()
 	menu()
 end
@@ -60,15 +79,15 @@ function vars()
 	ts 	= TargetSelector(TARGET_LESS_CAST_PRIORITY,0)
 	VP 	= VPrediction()
 	HPred 	= HPrediction()
+	HPred:AddSpell("Q", 'Nidalee', {collisionM = true, collisionH = true, delay = Spells.Q.delay, range = Spells.Q.range, speed = Spells.Q.speed, type = "DelayLine", width = Spells.Q.width*2, IsVeryLowAccuracy = true})
 	hunting = false
 	cougar 	= false
 	Ignite 	= (myHero:GetSpellData(SUMMONER_1).name:find("summonerdot") and SUMMONER_1) or (myHero:GetSpellData(SUMMONER_2).name:find("summonerdot") and SUMMONER_2) or nil
-	SxOrb:RegisterOnAttackCallback(CastCougarQ)
-	--HPred:AddSpell("Q", 'Nidalee', {type = "DelayLine", range = Q.range, speed = Q.speed, width = 2*Q.width, delay = Q.delay, collisionM = true, collisionH = true})
+	if SX then SxOrb:RegisterOnAttackCallback(CastCougarQ) end
 end
 
 function menu()
-	m = scriptConfig("[Noscope Nidalee Reborn v1.2]", "Noscopenidaleereborn")
+	m = scriptConfig("[Noscope Nidalee Reborn v1.3]", "Noscopenidaleereborn")
 	m:addSubMenu("Combo Manager", "combosettings")
 	m.combosettings:addSubMenu("Humanform Combo", "humancombo")
 	m.combosettings.humancombo:addParam("usehq", "Use Q", SCRIPT_PARAM_ONOFF, true)
@@ -128,18 +147,21 @@ function menu()
 	m.vip:addParam("LagFree", "Activate Lag Free Circles", 1, false)
 	m.vip:addParam("CL", "Length before snapping", 4, 75, 75, 2000, 0)
 	m.vip:addParam("CLinfo", "The lower your length the better system you need", 5, "")
-	m:addSubMenu("Orbwalk Manager", "orbwalk")
-	SxOrb:LoadToMenu(m.orbwalk)
 	m:addSubMenu("Drawings", "draw")
 	m.draw:addParam("drawq", "Draw Spear Range", SCRIPT_PARAM_ONOFF, false)
 	m.draw:addParam("drawaa", "Draw AA Range", SCRIPT_PARAM_ONOFF, false)
-	m.draw:addParam("drawspot", "Draw close Jumpspots", SCRIPT_PARAM_ONOFF, false)
+	if SX == true then
+	m:addSubMenu("Orbwalk Manager", "orbwalk")
+	SxOrb:LoadToMenu(m.orbwalk)
+	else
+	m:addSubMenu("SAC detected. SxOrbWalk disabled!", "orbwalk")
+	end
 	m:addTS(ts)
 	ts.name = "Noscope"
 	m:addParam("combokey", "Combo", SCRIPT_PARAM_ONKEYDOWN, false, 32)
 	m:addParam("escapekey", "Escape", SCRIPT_PARAM_ONKEYDOWN, false, 88)
 	m:addParam("harass", "Toogle Auto Harass with Spears", SCRIPT_PARAM_ONKEYTOGGLE, false, string.byte("C"))
-	PrintChat ("<font color='#FF9A00'>[Noscope Nidalee Reborn v1.2] by DeadDevil2 Loaded! </font>")
+	PrintChat ("<font color='#FF9A00'>[Noscope Nidalee Reborn v1.3] by DeadDevil2 Loaded! </font>")
 end
 
 function OnTick()
@@ -200,6 +222,18 @@ function OnRemoveBuff(unit, buff)
     end
 end
 ]]
+
+function OnIssueOrder(source, order, position, target)
+	if SAC == true then
+		if _G.AutoCarry.Keys.AutoCarry and source.isMe and order == 3 then -- 2 = move, 3 = attack
+			if GetDistance(position) - target.boundingRadius < myHero.range + myHero.boundingRadius then -- Check that they are in our AA range
+				CastSpell(_Q) -- This will cast before the "order" is actually sent to the server
+			end
+		end
+	else
+		return
+	end
+end
 
 function OnCreateObj(object)
     if object.name == 'Nidalee_Base_Q_Tar.troy' then
@@ -274,7 +308,7 @@ end
 
 -- VPrediction Q Cast --
 function CastVQ(unit)
-	local CastPosition,  HitChance,  Position = VP:GetLineCastPosition(target, 0.5, 30, 1400, 1300, myHero, true)
+	local CastPosition,  HitChance,  Position = VP:GetLineCastPosition(target, Spells.Q.delay, Spells.Q.width, Spells.Q.range, Spells.Q.speed, myHero, true)
 	if HitChance >= m.vip.hitchance then
   		CastSpell(_Q, CastPosition.x, CastPosition.z)
   	end
@@ -308,16 +342,19 @@ function combo()
 			if Wready and target and ValidTarget(target) and GetDistance(target) > 160 and m.combosettings.cougarcombo.usecw then
 				CastSpell(_W, target.x, target.z)
 			end
-		-- Humanform --
+		-- Human --
 		else
 			if Qready and ValidTarget(target, 1400) and target and GetDistance(target) <= 1400 and m.combosettings.humancombo.usehq then
 				if m.vip.prediction == 1 then
 					CastVQ(target)
 				elseif m.vip.prediction == 2 then
 					CastHQ(target)
-				elseif VIP_USER and m.vip.prediction == 3 then
-					CastDQ(target)
+				--elseif VIP_USER and m.vip.prediction == 3 then
+				--	CastDQ(target)
 				end
+			end
+			if Wready and ValidTarget(target, 650) and target and GetDistance(target) <= 650 and m.combosettings.humancombo.usehw then
+				CastSpell(_W, target.x, target.z)
 			end
 		end
 	end
