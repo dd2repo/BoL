@@ -1,6 +1,6 @@
 --[[
 Scriptname 	= Noscope Nidalee Reborn
-Version 	= 1.3
+Version 	= 1.4
 Author		= DeadDevil2
 
 ToDo
@@ -14,7 +14,7 @@ return
 end
 
 local ignite = nil
-local version = 1.3
+local version = 1.4
 local AUTOUPDATE = true
 local SX = false
 local SAC = false
@@ -84,11 +84,20 @@ function vars()
 	cougar 	= false
 	Ignite 	= (myHero:GetSpellData(SUMMONER_1).name:find("summonerdot") and SUMMONER_1) or (myHero:GetSpellData(SUMMONER_2).name:find("summonerdot") and SUMMONER_2) or nil
 	if SX then SxOrb:RegisterOnAttackCallback(CastCougarQ) end
+    jungleMinions = minionManager(MINION_JUNGLE, 800, myHero, MINION_SORT_MAXHEALTH_DEC)
+    enemyMinions = minionManager(MINION_ENEMY, 800, myHero, MINION_SORT_HEALTH_ASC)
 end
 
 function menu()
-	m = scriptConfig("[Noscope Nidalee Reborn v1.3]", "Noscopenidaleereborn")
-	m:addSubMenu("Combo Manager", "combosettings")
+	m = scriptConfig("[Noscope Nidalee Reborn v1.4]", "Noscopenidaleereborn")
+	
+	m:addSubMenu("NNR - [Key Manager]", "key")
+	m.key:addParam("combokey", "Combo", SCRIPT_PARAM_ONKEYDOWN, false, 32)
+	m.key:addParam("escapekey", "Escape", SCRIPT_PARAM_ONKEYDOWN, false, 88)
+	m.key:addParam("harass", "Toogle Auto Harass with Spears", SCRIPT_PARAM_ONKEYTOGGLE, false, string.byte("C"))
+	m.key:addParam("junglekey", "Clear", SCRIPT_PARAM_ONKEYDOWN, false, string.byte("V"))
+
+	m:addSubMenu("NNR - [Combo Manager]", "combosettings")
 	m.combosettings:addSubMenu("Humanform Combo", "humancombo")
 	m.combosettings.humancombo:addParam("usehq", "Use Q", SCRIPT_PARAM_ONOFF, true)
 	m.combosettings.humancombo:addParam("usehw", "Use W", SCRIPT_PARAM_ONOFF, true)
@@ -101,7 +110,8 @@ function menu()
 	m.combosettings:addParam("autocougar", "Switch to Cougar if target is Hunted", SCRIPT_PARAM_ONOFF, false)
 	m.combosettings:addParam("Cinfo", "Only switchs if target is in extended Pounce range", 5, "")
 	m.combosettings:addParam("platzhalter", "", 5, "")
-	m:addSubMenu("Item Manager", "items")
+	
+	m:addSubMenu("NNR - [Item Manager]", "items")
 	m.items:addParam("useitems", "Use Items", SCRIPT_PARAM_ONOFF, true)
 	m.items:addParam("platzhalter", "", 5, "")
 	m.items:addParam("hybriditemsinfo", "--- Hybrid Items ---", 5, "")
@@ -119,7 +129,8 @@ function menu()
 	m.items:addParam("hybriditemsinfo", "--- Defensive Items ---", 5, "")
 	m.items:addParam("enableautozhonya", "Auto Zhonya's", SCRIPT_PARAM_ONOFF, false)
 	m.items:addParam("autozhonya", "Zhonya's if Health under -> %", SCRIPT_PARAM_SLICE, 10, 0, 100, 0)
-	m:addSubMenu("Heal Manager", "healmanager")
+	
+	m:addSubMenu("NNR - [Heal Manager]", "healmanager")
 	m.healmanager:addParam("healinfo", "--- Self Heal ---", 5, "")
 	m.healmanager:addParam("enableheal", "Auto Heal", SCRIPT_PARAM_ONOFF, true)
 	m.healmanager:addParam("heal", "Heal if Health under -> %", SCRIPT_PARAM_SLICE, 20, 0, 100, 0)
@@ -128,12 +139,24 @@ function menu()
 	m.healmanager:addParam("platzhalter", "SoonTM <3", 5, "")
 	m.healmanager:addParam("platzhalter", "", 5, "")
 	m.healmanager:addParam("healswitch", "Switch Forms for Heal", SCRIPT_PARAM_ONOFF, false)
-	m:addSubMenu("KS Manager", "ks")
+	
+	m:addSubMenu("NNR - [KS Manager]", "ks")
 	m.ks:addParam("ignite", "Use Ignite", SCRIPT_PARAM_ONOFF, true)
 	m.ks:addParam("usecq", "Use Cougar Q", SCRIPT_PARAM_ONOFF, true)
 	m.ks:addParam("usecw", "Use Cougar W", SCRIPT_PARAM_ONOFF, true)
 	m.ks:addParam("usece", "Use Cougar E", SCRIPT_PARAM_ONOFF, true)
-	m:addSubMenu("Misc Manager", "vip")
+
+	m:addSubMenu("NNR - [Clear Manager]", "c")
+
+	m.c:addParam("usehq", "Use Spear", SCRIPT_PARAM_ONOFF, false)
+	m.c:addParam("usehw", "Use Trap", SCRIPT_PARAM_ONOFF, false)
+	m.c:addParam("usecq", "Use Cougar Q", SCRIPT_PARAM_ONOFF, true)
+	m.c:addParam("usecw", "Use Cougar W", SCRIPT_PARAM_ONOFF, true)
+	m.c:addParam("usece", "Use Cougar E", SCRIPT_PARAM_ONOFF, true)
+	m.c:addParam("autocougar", "Switch to Cougar if Creep is Hunted", SCRIPT_PARAM_ONOFF, false)
+
+
+	m:addSubMenu("NNR - [Misc Manager]", "vip")
 	m.vip:addParam("pretype", "--- Spear Prediction ---", 5, "")
 	m.vip:addParam("prediction", "Choose Prediction", SCRIPT_PARAM_LIST, 2, {"VPrediction", "HPrediction" })
 	m.vip:addParam("platzhalter", "", 5, "")
@@ -147,21 +170,20 @@ function menu()
 	m.vip:addParam("LagFree", "Activate Lag Free Circles", 1, false)
 	m.vip:addParam("CL", "Length before snapping", 4, 75, 75, 2000, 0)
 	m.vip:addParam("CLinfo", "The lower your length the better system you need", 5, "")
-	m:addSubMenu("Drawings", "draw")
+	
+	m:addSubMenu("NNR - [Draw Manager]", "draw")
 	m.draw:addParam("drawq", "Draw Spear Range", SCRIPT_PARAM_ONOFF, false)
 	m.draw:addParam("drawaa", "Draw AA Range", SCRIPT_PARAM_ONOFF, false)
+
 	if SX == true then
-	m:addSubMenu("Orbwalk Manager", "orbwalk")
+	m:addSubMenu("NNR - [Orbwalk Manager]", "orbwalk")
 	SxOrb:LoadToMenu(m.orbwalk)
 	else
-	m:addSubMenu("SAC detected. SxOrbWalk disabled!", "orbwalk")
+	m:addSubMenu("[SAC detected. SxOrbWalk disabled!]", "orbwalk")
 	end
 	m:addTS(ts)
 	ts.name = "Noscope"
-	m:addParam("combokey", "Combo", SCRIPT_PARAM_ONKEYDOWN, false, 32)
-	m:addParam("escapekey", "Escape", SCRIPT_PARAM_ONKEYDOWN, false, 88)
-	m:addParam("harass", "Toogle Auto Harass with Spears", SCRIPT_PARAM_ONKEYTOGGLE, false, string.byte("C"))
-	PrintChat ("<font color='#FF9A00'>[Noscope Nidalee Reborn v1.3] by DeadDevil2 Loaded! </font>")
+	PrintChat ("<font color='#FF9A00'>[Noscope Nidalee Reborn v1.4] by DeadDevil2 Loaded! </font>")
 end
 
 function OnTick()
@@ -178,6 +200,10 @@ function OnTick()
 	Items()
 	escape()
 	Killsteal()
+	jungleMinions:update()
+	enemyMinions:update()
+	JungleClear()
+	Clear()
 end
 
 function checks()
@@ -197,7 +223,7 @@ function checks()
 end
 
 function escape()
-	if m.escapekey then
+	if m.key.escapekey then
 			myHero:MoveTo(mousePos.x, mousePos.z)
 		if cougar then
 			if Wready then
@@ -205,6 +231,132 @@ function escape()
 			end
 		elseif Rready then
 			CastSpell(_R)
+		end
+	end
+end
+
+function Clear()
+	if m.key.junglekey then
+		local minion300, health300 = nil, 0
+		local minion375, health375 = nil, 0
+		local minion900, health900 = nil, 0
+		local minion1500, health1500 = nil, 0
+		for i, enemyMinion in pairs(enemyMinions.objects) do
+			if ValidTarget(enemyMinion) then
+				local distance = GetDistanceSqr(enemyMinion)
+				if distance < 1500 * 1500 then
+					if enemyMinion.health > health375 then
+						minion375, health375 = enemyMinion, enemyMinion.health
+					end
+					if distance < 300 * 300 then
+						if enemyMinion.health > health300 then
+							minion300, health300 = enemyMinion, enemyMinion.health
+						end
+					end
+					if distance < 900 * 900 then
+						if enemyMinion.health > health900 then
+							minion900, health900 = enemyMinion, enemyMinion.health
+						end
+					end
+					if distance < 1500 * 1500  then
+						if enemyMinion.health > health1500 then
+							minion1500, health1500  = enemyMinion, enemyMinion.health
+						end
+					end
+				end
+			end
+		end
+		if cougar then
+			if minion300 then
+				if Qready and m.c.usecq then
+					CastSpell(_Q) 
+				end
+			end
+			if minion375 then
+				if Wready and m.c.usecw then
+					CastSpell(_W, minion375 .x, minion375 .z)
+				end 
+				if Eready and m.c.usece then
+					CastSpell(_E, minion375 .x, minion375 .z)
+				end 
+			end
+		else
+			if minion1500 then
+				if Qready and m.c.usehq then
+					CastSpell(_Q, minion1500 .x, minion1500 .z)
+				end
+			end
+			if minion900 then
+				if Wready and m.c.usecw then
+					CastSpell(_W, minion900 .x, minion900 .z)
+				end 
+			end
+		end
+	end
+end
+
+function JungleClear()
+	if m.key.junglekey then
+		local minion300, health300 = nil, 0
+		local minion375, health375 = nil, 0
+		local minion900, health900 = nil, 0
+		local minion1500, health1500 = nil, 0
+		for i, jungleMinion in pairs(jungleMinions.objects) do
+			if ValidTarget(jungleMinion) then
+				local distance = GetDistanceSqr(jungleMinion)
+				if distance < 1500 * 1500 then
+					if jungleMinion.health > health375 then
+						minion375, health375 = jungleMinion, jungleMinion.health
+					end
+					if distance < 300 * 300 then
+						if jungleMinion.health > health300 then
+							minion300, health300 = jungleMinion, jungleMinion.health
+						end
+					end
+					if distance < 900 * 900 then
+						if jungleMinion.health > health900 then
+							minion900, health900 = jungleMinion, jungleMinion.health
+						end
+					end
+					if distance < 1500 * 1500  then
+						if jungleMinion.health > health1500 then
+							minion1500, health1500  = jungleMinion, jungleMinion.health
+						end
+					end
+				end
+			end
+			if TargetHunted(jungleMinion) and (objhunt1 or objhunt2 or objhunt3) and ValidTarget(jungleMinion, 680) and Wready and cougar then
+				CastSpell(_W, jungleMinion.x, jungleMinion.z)
+			elseif
+				TargetHunted(jungleMinion) and (objhunt1 or objhunt2 or objhunt3) and ValidTarget(jungleMinion, 680) and Rready and human then
+				CastSpell(_R)
+			end
+		end
+		if cougar then
+			if minion300 then
+				if Qready and m.c.usecq then
+					CastSpell(_Q) 
+				end
+			end
+			if minion375 then
+				if Wready and m.c.usecw then
+					CastSpell(_W, minion375 .x, minion375 .z)
+				end 
+				if Eready and m.c.usece then
+					CastSpell(_E, minion375 .x, minion375 .z)
+				end 
+			end
+		else
+			if minion1500 then
+				if Qready and m.c.usehq then
+					CastSpell(_Q, minion1500 .x, minion1500 .z)
+				end
+			end
+			if minion900 then
+				if Wready and m.c.usecw then
+					CastSpell(_W, minion900 .x, minion900 .z)
+				end 
+			end
 		end
 	end
 end
@@ -265,7 +417,17 @@ end
 
 function Huntedcheck()
 	if TargetHunted(target) and human and (objhunt1 or objhunt2 or objhunt3) then
-		if m.combosettings.autocougar and m.combokey and target and ValidTarget(target, 650) and Rready then
+		if m.combosettings.autocougar and m.key.combokey and target and ValidTarget(target, 650) and Rready then
+			CastSpell(_R)
+		end	
+	else
+	return
+	end
+end
+
+function Huntedcheck()
+	if TargetHunted(target) and human and (objhunt1 or objhunt2 or objhunt3) then
+		if m.combosettings.autocougar and m.key.combokey and target and ValidTarget(target, 650) and Rready then
 			CastSpell(_R)
 		end	
 	else
@@ -301,7 +463,7 @@ end
 
 -- Cast Function --
 function CastCougarQ()
-	if m.combokey and Qready and m.combosettings.cougarcombo.usecq and target and ValidTarget(target) then 
+	if m.key.combokey and Qready and m.combosettings.cougarcombo.usecq and target and ValidTarget(target) then 
 		CastSpell(_Q)
 	end 
 end
@@ -332,7 +494,7 @@ end
 
 function combo()
 	if not target then return end
-	if m.combokey then
+	if m.key.combokey then
 		-- cougar --
 		if cougar then
 			if Eready and target and GetDistance(target) < Spells.CE.range and m.combosettings.cougarcombo.usece then
@@ -388,7 +550,7 @@ end
 
 function Items()
 	if not target then return end
-	if m.combokey and m.items.useitems then 
+	if m.key.combokey and m.items.useitems then 
 		if cougar then
 			if m.items.hg == 2 then CastItem(3146, target) end
 			if m.items.hg == 4 then CastItem(3146, target) end
@@ -422,8 +584,8 @@ end
 function harass()
 	if not target then return end
 	if human then
-	    if m.harass then
-			if Qready and ValidTarget(target, 1400) and target and m.harass then
+	    if m.key.harass then
+			if Qready and ValidTarget(target, 1400) and target and m.key.harass then
 				if m.vip.prediction == 1 then
 					CastVQ(target)
 				else
@@ -439,10 +601,10 @@ function OnDraw()
 end
 
 function Drawings()
-	if m.draw.drawq and not COUGARFORM then
+	if m.draw.drawq and not cougar then
 		DrawCircle3D(myHero.x, myHero.y, myHero.z, 1400, 1, ARGB(255, 255, 255, 255))
 	end
-	if m.draw.drawaa and not COUGARFORM then
+	if m.draw.drawaa and not cougar then
 		DrawCircle3D(myHero.x, myHero.y, myHero.z, 550, 1, ARGB(255, 255, 255, 255))
 	end
 end
