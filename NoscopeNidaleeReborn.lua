@@ -425,16 +425,6 @@ function Huntedcheck()
 	end
 end
 
-function Huntedcheck()
-	if TargetHunted(target) and human and (objhunt1 or objhunt2 or objhunt3) then
-		if m.combosettings.autocougar and m.key.combokey and target and ValidTarget(target, 650) and Rready then
-			CastSpell(_R)
-		end	
-	else
-	return
-	end
-end
-
 function range()
 	ts:update()
 	if cougar then
