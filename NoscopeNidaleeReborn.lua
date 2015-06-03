@@ -1,6 +1,6 @@
 --[[
 Scriptname 	= Noscope Nidalee Reborn
-Version 	= 1.4
+Version 	= 1.5
 Author		= DeadDevil2
 
 ToDo
@@ -14,7 +14,7 @@ return
 end
 
 local ignite = nil
-local version = 1.4
+local version = 1.5
 local AUTOUPDATE = true
 local SX = false
 local SAC = false
@@ -89,7 +89,7 @@ function vars()
 end
 
 function menu()
-	m = scriptConfig("[Noscope Nidalee Reborn v1.4]", "Noscopenidaleereborn")
+	m = scriptConfig("[Noscope Nidalee Reborn v1.5]", "Noscopenidaleereborn")
 	
 	m:addSubMenu("NNR - [Key Manager]", "key")
 	m.key:addParam("combokey", "Combo", SCRIPT_PARAM_ONKEYDOWN, false, 32)
@@ -183,7 +183,7 @@ function menu()
 	end
 	m:addTS(ts)
 	ts.name = "Noscope"
-	PrintChat ("<font color='#FF9A00'>[Noscope Nidalee Reborn v1.4] by DeadDevil2 Loaded! </font>")
+	PrintChat ("<font color='#FF9A00'>[Noscope Nidalee Reborn v1.5] by DeadDevil2 Loaded! </font>")
 end
 
 function OnTick()
@@ -413,6 +413,16 @@ end
 
 function TargetHunted(unit)
  return TargetHaveBuff('nidaleepassivehunted', unit)
+end
+
+function Huntedcheck()
+	if TargetHunted(target) and human and (objhunt1 or objhunt2 or objhunt3) then
+		if m.combosettings.autocougar and m.key.combokey and target and ValidTarget(target, 650) and Rready then
+			CastSpell(_R)
+		end	
+	else
+	return
+	end
 end
 
 function Huntedcheck()
