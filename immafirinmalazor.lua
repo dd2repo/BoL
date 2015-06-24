@@ -5,7 +5,6 @@ Author		= DeadDevil2
 
 ToDo
 - Laneclear & Jungleclear
-- Spear KS
 - DivinePrediction Integration
 ]]
 
