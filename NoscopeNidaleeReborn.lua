@@ -6,7 +6,6 @@ Author		= DeadDevil2
 ToDo
 - Laneclear & Jungleclear
 - Spear KS
-- DivinePrediction Integration
 ]]
 
 if myHero.charName ~= "Nidalee" then
@@ -23,7 +22,7 @@ local SOURCELIB_URL = "https://raw.github.com/TheRealSource/public/master/common
 local SOURCELIB_PATH = LIB_PATH.."SourceLib.lua"
 local Spells = 	
 {
-	Q 	= 	{range = 1400, delay = 0.125, width = 40, speed = 1300},
+	Q 	= 	{range = 1400, delay = 0.25, width = 37.5, speed = 1325},
 	W 	= 	{range = 900, delay = 0.500, width = 80, speed = 1450},
 	E 	= 	{range = 600},
 	CW 	= 	{range = 375},
