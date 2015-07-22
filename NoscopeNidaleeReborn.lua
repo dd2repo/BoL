@@ -1,6 +1,6 @@
 --[[
 Scriptname 	= Noscope Nidalee Reborn
-Version 	= 1.6
+Version 	= 1.7
 Author		= DeadDevil2
 
 ToDo
@@ -13,7 +13,7 @@ return
 end
 
 local ignite = nil
-local version = 1.6
+local version = 1.7
 local AUTOUPDATE = true
 local SX = false
 local SAC = false
@@ -88,7 +88,7 @@ function vars()
 end
 
 function menu()
-	m = scriptConfig("[Noscope Nidalee Reborn v1.6]", "Noscopenidaleereborn")
+	m = scriptConfig("[Noscope Nidalee Reborn v1.7]", "Noscopenidaleereborn")
 	
 	m:addSubMenu("NNR - [Key Manager]", "key")
 	m.key:addParam("combokey", "Combo", SCRIPT_PARAM_ONKEYDOWN, false, 32)
@@ -182,7 +182,7 @@ function menu()
 	end
 	m:addTS(ts)
 	ts.name = "Noscope"
-	PrintChat ("<font color='#FF9A00'>[Noscope Nidalee Reborn v1.6] by DeadDevil2 Loaded! </font>")
+	PrintChat ("<font color='#FF9A00'>[Noscope Nidalee Reborn v1.7] by dd2 Loaded! </font>")
 end
 
 function OnTick()
