@@ -485,7 +485,7 @@ end
 
 -- HPrediction E Cast --
 function CastHE(unit)
-	local QPos, QHitChance = HPred:GetPredict("E", unit, myHero)
+	local QPos, QHitChance = HPred:GetPredict("HP_E", unit, myHero)
 	if QHitChance >= 2 then
 		CastSpell(_E, EPos.x, EPos.z)
 	end
