@@ -1,7 +1,7 @@
 --[[
 Scriptname 	= Imma firin mah lazor
-Version 	= 1.0
-Author		= DeadDevil2
+Version 	= 1.1
+Author		= dd2
 
 ToDo
 - Laneclear & Jungleclear
@@ -11,7 +11,7 @@ ToDo
 if myHero.charName ~= "Lux" then return end
 
 local ignite = nil
-local version = 1.0
+local version = 1.1
 local AUTOUPDATE = true
 local SX = false
 local SAC = false
@@ -73,15 +73,14 @@ function vars()
 	ts 	= TargetSelector(TARGET_LESS_CAST_PRIORITY,1300)
 	VP 	= VPrediction()
 	HPred 	= HPrediction()
-	HPred:AddSpell("Q", 'Lux', {collisionM = true, collisionH = false, delay = Spells.Q.delay, range = Spells.Q.range, speed = Spells.Q.speed, type = "DelayLine", width = Spells.Q.width*2, IsLowAccuracy = true})
-	HPred:AddSpell("E", 'Lux', {collisionM = false, collisionH = false, delay = Spells.E.delay, range = Spells.E.range, speed = Spells.E.speed, type = "DelayLine", width = Spells.E.width, IsLowAccuracy = true})
-	HPred:AddSpell("R", 'Lux', {collisionM = false, collisionH = false, delay = Spells.R.delay, range = Spells.R.range, speed = Spells.R.speed, type = "DelayLine", width = Spells.R.width, IsVeryLowAccuracy = true})
+	HP_Q = HPSkillshot({collisionM = true, collisionH = false, delay = Spells.Q.delay, range = Spells.Q.range, speed = Spells.Q.speed, type = "DelayLine", width = Spells.Q.width*2, IsLowAccuracy = true})
+	HP_E = HPSkillshot({collisionM = false, collisionH = false, delay = Spells.E.delay, range = Spells.E.range, speed = Spells.E.speed, type = "DelayCircle", width = Spells.E.width, IsLowAccuracy = true})
 	Ignite 	= (myHero:GetSpellData(SUMMONER_1).name:find("summonerdot") and SUMMONER_1) or (myHero:GetSpellData(SUMMONER_2).name:find("summonerdot") and SUMMONER_2) or nil
 	if SX then SxOrb:RegisterOnAttackCallback(CastCougarQ) end
 end
 
 function menu()
-	m = scriptConfig("[Imma firin mah lazor v1.0]", "ifml")
+	m = scriptConfig("[Imma firin mah lazor v1.1]", "ifml")
 	
 	m:addSubMenu("IFML - [Key Manager]", "key")
 	m.key:addParam("combokey", "Combo", SCRIPT_PARAM_ONKEYDOWN, false, 32)
@@ -133,7 +132,7 @@ function menu()
 	end
 	m:addTS(ts)
 	ts.name = "Lux"
-	PrintChat ("<font color='#FF9A00'>[Imma firin mah lazor v1.0] by DeadDevil2 Loaded! </font>")
+	PrintChat ("<font color='#FF9A00'>[Imma firin mah lazor v1.1] by dd2 Loaded! </font>")
 end
 
 function OnTick()
@@ -221,7 +220,7 @@ end
 
 -- HPrediction Q Cast --
 function CastHQ(unit)
-	local QPos, QHitChance = HPred:GetPredict("Q", unit, myHero)
+	local QPos, QHitChance = HPred:GetPredict("HP_Q", unit, myHero)
 	if QHitChance >= m.vip.hhitchance then
 		CastSpell(_Q, QPos.x, QPos.z)
 	end
@@ -237,7 +236,7 @@ end
 
 -- HPrediction E Cast --
 function CastHE(unit)
-	local WPos, WHitChance = HPred:GetPredict("E", unit, myHero)
+	local WPos, WHitChance = HPred:GetPredict("HP_E", unit, myHero)
 	if WHitChance >= m.vip.hhitchance then
 		CastSpell(_E, WPos.x, WPos.z)
 	end
