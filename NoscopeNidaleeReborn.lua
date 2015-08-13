@@ -1,6 +1,6 @@
 --[[
 Scriptname 	= Noscope Nidalee Reborn
-Version 	= 1.7
+Version 	= 1.8
 Author		= DeadDevil2
 
 ToDo
@@ -13,7 +13,7 @@ return
 end
 
 local ignite = nil
-local version = 1.7
+local version = 1.8
 local AUTOUPDATE = true
 local SX = false
 local SAC = false
@@ -78,7 +78,7 @@ function vars()
 	ts 	= TargetSelector(TARGET_LESS_CAST_PRIORITY,0)
 	VP 	= VPrediction()
 	HPred 	= HPrediction()
-	--HP_Q = HPSkillshot({type = "DelayLine", delay = Spells.Q.delay, range = Spells.Q.range, speed = Spells.Q.speed, collisionM = true, collisionH = true, Spells.Q.width*2, IsVeryLowAccuracy = true})
+	HP_Q = HPSkillshot({type = "DelayLine", delay = Spells.Q.delay, range = Spells.Q.range, speed = Spells.Q.speed, collisionM = true, collisionH = true, Spells.Q.width*2, IsVeryLowAccuracy = true})
 	hunting = false
 	cougar 	= false
 	Ignite 	= (myHero:GetSpellData(SUMMONER_1).name:find("summonerdot") and SUMMONER_1) or (myHero:GetSpellData(SUMMONER_2).name:find("summonerdot") and SUMMONER_2) or nil
@@ -88,7 +88,7 @@ function vars()
 end
 
 function menu()
-	m = scriptConfig("[Noscope Nidalee Reborn v1.7]", "Noscopenidaleereborn")
+	m = scriptConfig("[Noscope Nidalee Reborn v1.8]", "Noscopenidaleereborn")
 	
 	m:addSubMenu("NNR - [Key Manager]", "key")
 	m.key:addParam("combokey", "Combo", SCRIPT_PARAM_ONKEYDOWN, false, 32)
@@ -182,7 +182,7 @@ function menu()
 	end
 	m:addTS(ts)
 	ts.name = "Noscope"
-	PrintChat ("<font color='#FF9A00'>[Noscope Nidalee Reborn v1.7] by dd2 Loaded! </font>")
+	PrintChat ("<font color='#FF9A00'>[Noscope Nidalee Reborn v1.8] by dd2 Loaded! </font>")
 end
 
 function OnTick()
@@ -477,7 +477,7 @@ end
 
 -- HPrediction Q Cast --
 function CastHQ(unit)
-	local QPos, QHitChance = HPred:GetPredict("Q", unit, myHero)
+	local QPos, QHitChance = HPred:GetPredict("HP_Q", unit, myHero)
 	if QHitChance >= m.vip.hhitchance then
 		CastSpell(_Q, QPos.x, QPos.z)
 	end
