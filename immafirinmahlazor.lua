@@ -1,6 +1,6 @@
 --[[
 Scriptname 	= Imma firin mah lazor
-Version 	= 1.1
+Version 	= 1.2
 Author		= dd2
 
 ToDo
@@ -11,7 +11,7 @@ ToDo
 if myHero.charName ~= "Lux" then return end
 
 local ignite = nil
-local version = 1.1
+local version = 1.2
 local AUTOUPDATE = true
 local SX = false
 local SAC = false
@@ -76,7 +76,6 @@ function vars()
 	HP_Q = HPSkillshot({collisionM = true, collisionH = false, delay = Spells.Q.delay, range = Spells.Q.range, speed = Spells.Q.speed, type = "DelayLine", width = Spells.Q.width*2, IsLowAccuracy = true})
 	HP_E = HPSkillshot({collisionM = false, collisionH = false, delay = Spells.E.delay, range = Spells.E.range, speed = Spells.E.speed, type = "DelayCircle", width = Spells.E.width, IsLowAccuracy = true})
 	Ignite 	= (myHero:GetSpellData(SUMMONER_1).name:find("summonerdot") and SUMMONER_1) or (myHero:GetSpellData(SUMMONER_2).name:find("summonerdot") and SUMMONER_2) or nil
-	if SX then SxOrb:RegisterOnAttackCallback(CastCougarQ) end
 end
 
 function menu()
@@ -398,12 +397,6 @@ function OnDraw()
 end
 
 function Drawings()
-	if EObject then
-		DrawCircle(EObject.x, EObject.y, EObject.z, 50,  ARGB(255, 202, 111, 255))
-		DrawCircle(EObject.x, EObject.y, EObject.z, 60,  ARGB(255, 215, 111, 255))
-		DrawCircle(EObject.x, EObject.y, EObject.z, 70,  ARGB(255, 231, 111, 255))
-		DrawCircle(EObject.x, EObject.y, EObject.z, 80,  ARGB(255, 202, 111, 255))
-	end
 	if m.draw.drawq then
 		DrawCircle3D(myHero.x, myHero.y, myHero.z, Spells.Q.range, 1, ARGB(255, 255, 255, 255))
 	end
