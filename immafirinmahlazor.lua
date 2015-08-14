@@ -1,6 +1,6 @@
 --[[
 Scriptname 	= Imma firin mah lazor
-Version 	= 1.2
+Version 	= 1.3
 Author		= dd2
 
 ToDo
@@ -11,7 +11,7 @@ ToDo
 if myHero.charName ~= "Lux" then return end
 
 local ignite = nil
-local version = 1.2
+local version = 1.3
 local AUTOUPDATE = true
 local SX = false
 local SAC = false
@@ -74,7 +74,6 @@ function vars()
 	VP 	= VPrediction()
 	HPred 	= HPrediction()
 	HP_Q = HPSkillshot({collisionM = true, collisionH = false, delay = Spells.Q.delay, range = Spells.Q.range, speed = Spells.Q.speed, type = "DelayLine", width = Spells.Q.width*2, IsLowAccuracy = true})
-	HP_E = HPSkillshot({collisionM = false, collisionH = false, delay = Spells.E.delay, range = Spells.E.range, speed = Spells.E.speed, type = "DelayCircle", width = Spells.E.width, IsLowAccuracy = true})
 	Ignite 	= (myHero:GetSpellData(SUMMONER_1).name:find("summonerdot") and SUMMONER_1) or (myHero:GetSpellData(SUMMONER_2).name:find("summonerdot") and SUMMONER_2) or nil
 end
 
@@ -219,7 +218,7 @@ end
 
 -- HPrediction Q Cast --
 function CastHQ(unit)
-	local QPos, QHitChance = HPred:GetPredict("HP_Q", unit, myHero)
+	local QPos, QHitChance = HPred:GetPredict(HP_Q, unit, myHero)
 	if QHitChance >= m.vip.hhitchance then
 		CastSpell(_Q, QPos.x, QPos.z)
 	end
@@ -235,9 +234,9 @@ end
 
 -- HPrediction E Cast --
 function CastHE(unit)
-	local WPos, WHitChance = HPred:GetPredict("HP_E", unit, myHero)
-	if WHitChance >= m.vip.hhitchance then
-		CastSpell(_E, WPos.x, WPos.z)
+	local EPos, EHitChance = HPred:GetPredict(HPred.Presets['Lux']["E"], unit, myHero)
+	if EHitChance >= m.vip.hhitchance then
+		CastSpell(_E, EPos.x, EPos.z)
 	end
 end
 
@@ -247,14 +246,6 @@ function CastVR(unit)
 	if HitChance >= m.vip.hitchance then
   		CastSpell(_R, CastPosition.x, CastPosition.z)
   	end
-end
-
--- HPrediction R Cast --
-function CastHR(unit)
-	local RPos, RHitChance = HPred:GetPredict("R", unit, myHero)
-	if RHitChance >= m.vip.hhitchance then
-		CastSpell(_R, RPos.x, RPos.z)
-	end
 end
 
 function etrigger()
