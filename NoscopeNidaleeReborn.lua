@@ -78,7 +78,7 @@ function vars()
 	ts 	= TargetSelector(TARGET_LESS_CAST_PRIORITY,0)
 	VP 	= VPrediction()
 	HPred 	= HPrediction()
-	HP_Q = HPSkillshot({type = "DelayLine", delay = Spells.Q.delay, range = Spells.Q.range, speed = Spells.Q.speed, collisionM = true, collisionH = true, Spells.Q.width*2, IsVeryLowAccuracy = true})
+	HP_Q = HPSkillshot({type = "DelayLine", delay = Spells.Q.delay, range = Spells.Q.range, speed = Spells.Q.speed, collisionM = true, collisionH = true, width = Spells.Q.width*2, IsVeryLowAccuracy = true})
 	hunting = false
 	cougar 	= false
 	Ignite 	= (myHero:GetSpellData(SUMMONER_1).name:find("summonerdot") and SUMMONER_1) or (myHero:GetSpellData(SUMMONER_2).name:find("summonerdot") and SUMMONER_2) or nil
