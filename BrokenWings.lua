@@ -1,7 +1,7 @@
 --[[
   Script: Riven - Broken Wings
   Author: DD2
-  Version: 517001
+  Version: 517002
   
   Set _G.LoadSxAsDefault = false/true if you do not want/want to automatically load SxOrbWalker
 ]]
