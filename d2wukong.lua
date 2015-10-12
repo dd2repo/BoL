@@ -2,11 +2,11 @@ if myHero.charName ~= "MonkeyKing" then
 return
 end
 
-require 'SxOrbWalk'
-
+local SX = false
+local SAC = false
 local selectedTar = nil
 local VP = nil
-local version = 1.1
+local version = 1.2
 local AUTOUPDATE = true
 local SCRIPT_NAME = "d2wukong"
 local selectedTar = nil
@@ -32,13 +32,33 @@ if AUTOUPDATE then
 end
 
 function OnLoad()
+    if _G.Reborn_Loaded ~= nil then
+        SAC = true
+        print ("D2 Wukong: SAC Reborn detected.")
+    else SX = true
+        print ("D2 Wukong: SAC cannot be found. Will load SxOrbWalk.")
+        if FileExist(LIB_PATH .. "/SxOrbWalk.lua") then
+            require 'SxOrbWalk'
+        else print ("D2 Wukong: You need to download SxOrbWalk. Loading Script failed..") return 
+        end
+    end
+vars()
+menu()
+end
+
+function vars()
 ts = TargetSelector(TARGET_LESS_CAST_PRIORITY,315)
 m = scriptConfig("[D2 Wukong v1.1]", "d2wukong")
 orb = SxOrb
-orb:RegisterAfterAttackCallback(hydra)
+if SX then orb:RegisterAfterAttackCallback(hydra)
 --orb:RegisterOnAttackCallback(CastQ)
 Ignite = (myHero:GetSpellData(SUMMONER_1).name:find("summonerdot") and SUMMONER_1) or (myHero:GetSpellData(SUMMONER_2).name:find("summonerdot") and SUMMONER_2) or nil
 
+PrintChat ("<font color='#00BCFF'>[D2 Wukong v1.1] loaded!</font>")
+end
+
+
+function menu()
 m:addSubMenu("Combo Settings", "combosettings")
 m.combosettings:addParam("useq", "Use Q", SCRIPT_PARAM_ONOFF, true)
 m.combosettings:addParam("usee", "Use E", SCRIPT_PARAM_ONOFF, true)
@@ -61,12 +81,27 @@ m:addParam("combokey", "Combo", SCRIPT_PARAM_ONKEYDOWN, false, 32)
 --m:addParam("magnet", "Meele Magnet", SCRIPT_PARAM_ONOFF, true)
 m:addParam("target", "Left Click Target Selection", SCRIPT_PARAM_ONOFF, true)
 
-m:addSubMenu("Orbwalker", "orbwalk")
-orb:LoadToMenu(m.orbwalk)
+    if SX == true then
+    m:addSubMenu("Orbwalker", "orbwalk")
+    orb:LoadToMenu(m.orbwalk)
+    else
+    m:addSubMenu("[SAC detected. SxOrbWalk disabled!]", "orbwalk")
+    end
+
 m:addTS(ts)
 ts.name = "Selection"
+end
 
-PrintChat ("<font color='#00BCFF'>[D2 Wukong v1.1] loaded!</font>")
+function OnIssueOrder(source, order, position, target)
+    if SAC == true then
+        if _G.AutoCarry.Keys.AutoCarry and source.isMe and order == 3 then -- 2 = move, 3 = attack
+            if GetDistance(position) - target.boundingRadius < myHero.range + myHero.boundingRadius then -- Check that they are in our AA range
+                CastItem(3074) CastItem(3077) -- This will cast before the "order" is actually sent to the server
+            end
+        end
+    else
+        return
+    end
 end
 
 function OnGainBuff(unit, buff)
