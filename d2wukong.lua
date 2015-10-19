@@ -6,7 +6,7 @@ local SX = false
 local SAC = false
 local selectedTar = nil
 local VP = nil
-local version = 1.2
+local version = 1.3
 local AUTOUPDATE = true
 local SCRIPT_NAME = "d2wukong"
 local selectedTar = nil
@@ -50,11 +50,12 @@ function vars()
 ts = TargetSelector(TARGET_LESS_CAST_PRIORITY,315)
 m = scriptConfig("[D2 Wukong v1.1]", "d2wukong")
 orb = SxOrb
-if SX then orb:RegisterAfterAttackCallback(hydra)
---orb:RegisterOnAttackCallback(CastQ)
-Ignite = (myHero:GetSpellData(SUMMONER_1).name:find("summonerdot") and SUMMONER_1) or (myHero:GetSpellData(SUMMONER_2).name:find("summonerdot") and SUMMONER_2) or nil
+    if SX then orb:RegisterAfterAttackCallback(hydra)
+    --orb:RegisterOnAttackCallback(CastQ)
+    Ignite = (myHero:GetSpellData(SUMMONER_1).name:find("summonerdot") and SUMMONER_1) or (myHero:GetSpellData(SUMMONER_2).name:find("summonerdot") and SUMMONER_2) or nil
 
-PrintChat ("<font color='#00BCFF'>[D2 Wukong v1.1] loaded!</font>")
+    PrintChat ("<font color='#00BCFF'>[D2 Wukong v1.1] loaded!</font>")
+    end
 end
 
 
