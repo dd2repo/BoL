@@ -1,6 +1,6 @@
 --[[
 Scriptname 	= Imma firin mah lazor
-Version 	= 1.3
+Version 	= 1.4
 Author		= dd2
 
 ToDo
@@ -11,7 +11,7 @@ ToDo
 if myHero.charName ~= "Lux" then return end
 
 local ignite = nil
-local version = 1.3
+local version = 1.4
 local AUTOUPDATE = true
 local SX = false
 local SAC = false
