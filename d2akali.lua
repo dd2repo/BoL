@@ -6,7 +6,7 @@ require 'SxOrbWalk'
 
 local selectedTar = nil
 local VP = nil
-local version = 1.2
+local version = 1.3
 local AUTOUPDATE = true
 local SCRIPT_NAME = "d2akali"
 local SOURCELIB_URL = "https://raw.github.com/TheRealSource/public/master/common/SourceLib.lua"
