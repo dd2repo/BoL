@@ -94,7 +94,7 @@ ts.name = "Selection"
 end
 
 function OnIssueOrder(source, order, position, target)
-    if SAC == true then
+    if _G.Reborn_Initialised then
         if _G.AutoCarry.Keys.AutoCarry and source.isMe and order == 3 then -- 2 = move, 3 = attack
             if GetDistance(position) - target.boundingRadius < myHero.range + myHero.boundingRadius then -- Check that they are in our AA range
                 CastItem(3074) CastItem(3077) -- This will cast before the "order" is actually sent to the server
