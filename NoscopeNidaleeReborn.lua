@@ -1,6 +1,6 @@
 --[[
 Scriptname 	= Noscope Nidalee Reborn
-Version 	= 1.9
+Version 	= 2.0
 Author		= DeadDevil2
 
 ToDo
@@ -13,7 +13,7 @@ return
 end
 
 local ignite = nil
-local version = 1.9
+local version = 2.0
 local AUTOUPDATE = true
 local SX = false
 local SAC = false
@@ -88,7 +88,7 @@ function vars()
 end
 
 function menu()
-	m = scriptConfig("[Noscope Nidalee Reborn v1.9]", "Noscopenidaleereborn")
+	m = scriptConfig("[Noscope Nidalee Reborn v2.0]", "Noscopenidaleereborn")
 	
 	m:addSubMenu("NNR - [Key Manager]", "key")
 	m.key:addParam("combokey", "Combo", SCRIPT_PARAM_ONKEYDOWN, false, 32)
@@ -182,7 +182,7 @@ function menu()
 	end
 	m:addTS(ts)
 	ts.name = "Noscope"
-	PrintChat ("<font color='#FF9A00'>[Noscope Nidalee Reborn v1.9] by dd2 Loaded! </font>")
+	PrintChat ("<font color='#FF9A00'>[Noscope Nidalee Reborn v2.0] by dd2 Loaded! </font>")
 end
 
 function OnTick()
@@ -352,7 +352,7 @@ function JungleClear()
 				end
 			end
 			if minion900 then
-				if Wready and m.c.usecw then
+				if Wready and m.combosettings.humancombo.usehw then
 					CastSpell(_W, minion900 .x, minion900 .z)
 				end 
 			end
