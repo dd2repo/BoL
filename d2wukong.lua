@@ -3,10 +3,11 @@ return
 end
 
 local SX = false
+local Hydra = false
 local SAC = false
 local selectedTar = nil
 local VP = nil
-local version = 1.5
+local version = 1.6
 local AUTOUPDATE = true
 local SCRIPT_NAME = "d2wukong"
 local selectedTar = nil
@@ -47,21 +48,19 @@ menu()
 end
 
 function vars()
-ts = TargetSelector(TARGET_LESS_CAST_PRIORITY,315)
-m = scriptConfig("[D2 Wukong v1.1]", "d2wukong")
-orb = SxOrb
-    if SX then orb:RegisterAfterAttackCallback(hydra)
-    --orb:RegisterOnAttackCallback(CastQ)
-    Ignite = (myHero:GetSpellData(SUMMONER_1).name:find("summonerdot") and SUMMONER_1) or (myHero:GetSpellData(SUMMONER_2).name:find("summonerdot") and SUMMONER_2) or nil
-
+    ts = TargetSelector(TARGET_LESS_CAST_PRIORITY,315)
+    m = scriptConfig("[D2 Wukong v1.6]", "d2wukong")
+    orb = SxOrb
+    if SX then orb:RegisterAfterAttackCallback(hydra) end
+    Ignite  = (myHero:GetSpellData(SUMMONER_1).name:find("summonerdot") and SUMMONER_1) or (myHero:GetSpellData(SUMMONER_2).name:find("summonerdot") and SUMMONER_2) or nil
     PrintChat ("<font color='#00BCFF'>[D2 Wukong v1.1] loaded!</font>")
-    end
 end
 
 
 function menu()
 m:addSubMenu("Combo Settings", "combosettings")
 m.combosettings:addParam("useq", "Use Q", SCRIPT_PARAM_ONOFF, true)
+m.combosettings:addParam("useqaa", "Use Q as AA reset only (meele only)", SCRIPT_PARAM_ONOFF, true)
 m.combosettings:addParam("usee", "Use E", SCRIPT_PARAM_ONOFF, true)
 
 m:addSubMenu("Ultimate Settings", "ultimatesettings")
@@ -94,10 +93,10 @@ ts.name = "Selection"
 end
 
 function OnIssueOrder(source, order, position, target)
-    if _G.Reborn_Initialised then
+    if _G.Reborn_Initialised and SAC then
         if _G.AutoCarry.Keys.AutoCarry and source.isMe and order == 3 then -- 2 = move, 3 = attack
-            if GetDistance(position) - target.boundingRadius < myHero.range + myHero.boundingRadius then -- Check that they are in our AA range
-                CastItem(3074) CastItem(3077) -- This will cast before the "order" is actually sent to the server
+            if GetDistance(position) - target.boundingRadius < myHero.range + myHero.boundingRadius and Hready and Hydra ~= nil then -- Check that they are in our AA range
+                CastSpell(Hydra) -- This will cast before the "order" is actually sent to the server
             end
         end
     else
@@ -136,8 +135,7 @@ function OnDeleteObj(object)
 end
 
 function OnTick()
-checks()
---targetmagnet()
+
 checks()
 Killsteal()
 CastQ()
@@ -152,19 +150,16 @@ function checks()
     Wready = (myHero:CanUseSpell(_W) == READY)
     Eready = (myHero:CanUseSpell(_E) == READY)
     Rready = (myHero:CanUseSpell(_R) == READY)
+    for i=6,11 do
+        local itemName = myHero:GetSpellData(i).name
+        if itemName == "ItemTiamatCleave" then 
+            Hydra = i
+            Hready = (myHero:CanUseSpell(Hydra) == READY)
+        end
+    end
     target = ts.target
 end
 
-function CountEnemyHeroInRange(range)
-    local enemyInRange = 0
-    for i = 1, heroManager.iCount, 1 do
-        local hero = heroManager:getHero(i)
-        if ValidTarget(hero,range) then
-            enemyInRange = enemyInRange + 1
-        end
-    end
-    return enemyInRange
-end 
 
 function Autoult()
     if m.ultimatesettings.useau and not (usingult or usingult2 or usingult3) then
@@ -188,22 +183,31 @@ function Autoult()
     end
 end
 
+function CastQ2()
+    print("AA Reset")
+    CastSpell(0)
+end
+
 function hydra()
-    if m.combokey and target and ValidTarget(target, 200) and GetDistance(target) <= 200 then CastItem(3074) CastItem(3077)
+    if m.combokey and target and ValidTarget(target, 200) and GetDistance(target) <= 200 and Hready then CastSpell(Hydra)
     end
 end
 
 function CastQ()
     if not (usingult or usingult2 or usingult3) then
-        if m.combokey and Qready and m.combosettings.useq and target and ValidTarget(target, 290) and GetDistance(target) <= 290 then
+        if m.combokey and Qready and m.combosettings.useq and target and ValidTarget(target, 290) and GetDistance(target) <= 290 and not m.combosettings.useqaa then
             CastSpell(_Q)
-        end
+        elseif m.combosettings.useqaa and Qready and m.combosettings.useq and target and m.combokey then
+            if _G.Reborn_Initialised and SAC then 
+                _G.AutoCarry.Plugins:RegisterOnAttacked(CastQ2)
+            end
+        end 
     end
 end
 
 function CastE()
     if not (usingult or usingult2 or usingult3) then
-        if m.combokey and Eready then
+        if m.combokey and Eready and m.combosettings.usee then
             ts.range = 620
             ts:update()
             if ValidTarget(ts.target, 620) then
