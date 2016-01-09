@@ -6,11 +6,13 @@ require 'SxOrbWalk'
 
 local selectedTar = nil
 local VP = nil
-local version = 1.3
+local version = 1.4
 local AUTOUPDATE = true
 local SCRIPT_NAME = "d2akali"
 local SOURCELIB_URL = "https://raw.github.com/TheRealSource/public/master/common/SourceLib.lua"
 local SOURCELIB_PATH = LIB_PATH.."SourceLib.lua"
+local menu = nil
+local m = nil
 
 if FileExist(SOURCELIB_PATH) then
     require("SourceLib")
@@ -29,29 +31,33 @@ if AUTOUPDATE then
 end
 
 function OnLoad()
-Vars()
-Menu()
+    if _G.Reborn_Loaded ~= nil then
+        SAC = true
+        print ("D2 Akali: SAC Reborn detected.")
+    else SX = true
+        print ("D2 Akali: SAC cannot be found. Will load SxOrbWalk.")
+        if FileExist(LIB_PATH .. "/SxOrbWalk.lua") then
+            require 'SxOrbWalk'
+        else print ("D2 Akali: You need to download SxOrbWalk. Loading Script failed..") return 
+        end
+    end
+vars()
+menu()
 end
 
-function Vars()
+function vars()
 ts = TargetSelector(TARGET_LESS_CAST_PRIORITY,900)
-m = scriptConfig("[D2 Akali v1.2]", "d2akali")
-orb = SxOrb
+m = scriptConfig("[D2 Akali v1.4]", "d2akali")
 Ignite = (myHero:GetSpellData(SUMMONER_1).name:find("summonerdot") and SUMMONER_1) or (myHero:GetSpellData(SUMMONER_2).name:find("summonerdot") and SUMMONER_2) or nil
 end
 
-function Menu()
+function menu()
 m:addSubMenu("Combo Settings", "combosettings")
 m.combosettings:addParam("useq", "Use Q", SCRIPT_PARAM_ONOFF, true)
 m.combosettings:addParam("usee", "Use E", SCRIPT_PARAM_ONOFF, true)
 m.combosettings:addParam("user", "Use R", SCRIPT_PARAM_ONOFF, true)
-m.combosettings:addParam("logic", "Combo logic", SCRIPT_PARAM_LIST, 1, {"Spam everything", "Only E if Q is on target", "Force R > Q > E" })
+--m.combosettings:addParam("logic", "Combo logic", SCRIPT_PARAM_LIST, 1, {"Spam everything"})
 m:addSubMenu("Item Settings", "items")
-m.items:addParam("usedfg", "RIP Deathfire Grasp", SCRIPT_PARAM_ONOFF, true)
-m.items:addParam("usebt", "RIP Blackfire Torch", SCRIPT_PARAM_ONOFF, true)
-m.items:addParam("usehg", "Use Hextech Gunblade", SCRIPT_PARAM_ONOFF, true)
-m.items:addParam("usebc", "Use Bilgewater Cutlass", SCRIPT_PARAM_ONOFF, true)
-m.items:addParam("logic", "Item logic", SCRIPT_PARAM_LIST, 1, {"Combo", "Always" })
 m.items:addParam("enableautozhonya", "Auto Zhonya's", SCRIPT_PARAM_ONOFF, false)
 m.items:addParam("autozhonya", "Zhonya's if Health under -> %", SCRIPT_PARAM_SLICE, 10, 0, 100, 0)
 m:addSubMenu("Stealth Settings", "stealthsettngs")
@@ -71,8 +77,13 @@ m.draws:addParam("drawr", "Draw R range", SCRIPT_PARAM_ONOFF, false)
 m:addParam("combokey", "Combo", SCRIPT_PARAM_ONKEYDOWN, false, 32)
 --m:addParam("magnet", "Meele Magnet", SCRIPT_PARAM_ONOFF, true)
 m:addParam("target", "Left click target selection", SCRIPT_PARAM_ONOFF, true)
-m:addSubMenu("Orbwalker", "orbwalk")
-orb:LoadToMenu(m.orbwalk)
+    if SX == true then
+    sx = orb
+    m:addSubMenu("Orbwalker", "orbwalk")
+    orb:LoadToMenu(m.orbwalk)
+    else
+    m:addSubMenu("SAC detected. SxOrbWalk disabled!", "orbwalk")
+    end
 m:addTS(ts)
 ts.name = "Selection"
 PrintChat ("<font color='#F20000'>[D2 Akali v1.2] loaded!</font>")
@@ -80,12 +91,10 @@ end
 
 function OnTick()
 checks()
---targetmagnet()
 Killsteal()
 Combo()
 CST()
 Autostealth()
-Items()
 autozhonya()
 end
 
@@ -143,59 +152,23 @@ function autozhonya()
     end
 end
 
-function AkaliMota(unit)
- return TargetHaveBuff('AkaliMota', unit)
-end
-
-function Items()
-    if ValidTarget(target) and m.combokey then
-        local tdis = GetDistance(target)
-        if Qready or (m.items.logic == 1 and (Eready or Qready or Rready)) then
-            if m.items.usehg and tdis < 700 then CastItem(3146, target) end
-            if m.items.usebc and tdis < 700 then CastItem(3144, target) end
-        end
-    end
-end
-
 function Combo()
     if not target then return end
     if ValidTarget(target) and m.combokey then
         local tdis  = GetDistance(target)
-        local hbuff = AkaliMota(target)
-        if m.combosettings.logic == 1 then
+
             if m.combosettings.useq and tdis < 600 and Qready then
                 CastSpell(_Q, target)
             end
-            if m.combosettings.usee and tdis < 300 and Eready then
+            if m.combosettings.usee and tdis < 325 and Eready then
                 CastSpell(_E, target)
             end
-            if m.combosettings.user and tdis < 800 and Rready then
+            if m.combosettings.user and tdis < 700 and Rready then
                 CastSpell(_R, target)
             end
-        elseif m.combosettings.logic == 2 then
-            if m.combosettings.useq and tdis < 600 and Qready then
-                CastSpell(_Q, target)
-            end 
-            if m.combosettings.usee and tdis < 300 and Eready and hbuff then
-                CastSpell(_E, target)
-            end
-            if m.combosettings.user and tdis < 800 and Rready then
-                CastSpell(_R, target)
-            end
-        elseif m.combosettings.logic == 3 then
-            if Qready and Eready and Rready and tdis < 800 then
-                CastSpell(_R, target)
-            end
-            if (myHero.level < 6 or myHero:GetSpellData(_R).currentCd > 0) and Qready and tdis < 600 then
-                CastSpell(_Q, target)
-            end
-            if (myHero.level < 6 or hbuff) and Eready and tdis < 300 then
-                CastSpell(_E)
-            end
-        end
+
     end
 end
-
 function Killsteal()
     for _, enemy in pairs(GetEnemyHeroes()) do
     if not enemy then return end
@@ -223,34 +196,7 @@ function Killsteal()
         end
     end 
 end
---[[
-function targetmagnet()
-    if m.combokey and target and ValidTarget(target, 300) and m.magnet then
-        local dist = GetDistanceSqr(target)
-        if dist < 300^2 and dist > 80^2 then 
-            stayclose(target, true)
-        elseif dist <= 80^2 then
-            stayclose(target, false)
-        end
-    end
-end
 
-function stayclose(unit, mode)
-    if mode then
-        local myVector = Vector(myHero.x, myHero.y, myHero.z)
-        local targetVector = Vector(unit.x, unit.y, unit.z)
-        local orbwalkPoint1 = targetVector + (myVector-targetVector):normalized()*100
-        local orbwalkPoint2 = targetVector - (myVector-targetVector):normalized()*100
-        if GetDistanceSqr(orbwalkPoint1) < GetDistanceSqr(orbwalkPoint2) then
-            orb:OrbWalk(unit, orbwalkPoint1)
-        else
-            orb:OrbWalk(unit, orbwalkPoint2)
-        end
-    else
-        orb:OrbWalk(unit, myHero)
-    end
-end
-]]
 function CST()
     local Target = nil
     if selectedTar then Target = selectedTar
@@ -274,10 +220,10 @@ function OnWndMsg(Msg, Key)
             if starget and minD < 500 then
                 if selectedTar and starget.charName == selectedTar.charName then
                     selectedTar = nil
-                    print("<font color=\"#FFFFFF\">Akali: Target <b>UNSELECTED</b>: "..starget.charName.."</font>")
+                   PrintChat ("<font color='#F20000'><b>UNSELECTED -> </b>: "..starget.charName.."</font>")
                 else
                     selectedTar = starget               
-                    print("<font color=\"#FFFFFF\">Akali: New target <b>selected</b>: "..starget.charName.."</font>")
+                   PrintChat ("<font color='#F20000'><b>SELECTED -> </b>: "..starget.charName.."</font>")
                 end
             end
         end
@@ -289,9 +235,9 @@ function OnDraw()
         DrawCircle(myHero.x, myHero.y, myHero.z, 600, ARGB(255, 255, 255, 255))
     end
     if m.draws.drawe then
-        DrawCircle(myHero.x, myHero.y, myHero.z, 300, ARGB(255, 255, 255, 255))
+        DrawCircle(myHero.x, myHero.y, myHero.z, 325, ARGB(255, 255, 255, 255))
     end
     if m.draws.drawr then
-        DrawCircle(myHero.x, myHero.y, myHero.z, 800, ARGB(255, 255, 255, 255))
+        DrawCircle(myHero.x, myHero.y, myHero.z, 700, ARGB(255, 255, 255, 255))
     end
 end
