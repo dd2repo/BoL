@@ -6,7 +6,7 @@ require 'SxOrbWalk'
 
 local selectedTar = nil
 local VP = nil
-local version = 1.4
+local version = 1.5
 local AUTOUPDATE = true
 local SCRIPT_NAME = "d2akali"
 local SOURCELIB_URL = "https://raw.github.com/TheRealSource/public/master/common/SourceLib.lua"
@@ -47,7 +47,7 @@ end
 
 function vars()
 ts = TargetSelector(TARGET_LESS_CAST_PRIORITY,900)
-m = scriptConfig("[D2 Akali v1.4]", "d2akali")
+m = scriptConfig("[D2 Akali v1.5]", "d2akali")
 Ignite = (myHero:GetSpellData(SUMMONER_1).name:find("summonerdot") and SUMMONER_1) or (myHero:GetSpellData(SUMMONER_2).name:find("summonerdot") and SUMMONER_2) or nil
 end
 
@@ -78,7 +78,7 @@ m:addParam("combokey", "Combo", SCRIPT_PARAM_ONKEYDOWN, false, 32)
 --m:addParam("magnet", "Meele Magnet", SCRIPT_PARAM_ONOFF, true)
 m:addParam("target", "Left click target selection", SCRIPT_PARAM_ONOFF, true)
     if SX == true then
-    sx = orb
+    orb = SxOrb
     m:addSubMenu("Orbwalker", "orbwalk")
     orb:LoadToMenu(m.orbwalk)
     else
