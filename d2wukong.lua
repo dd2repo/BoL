@@ -184,7 +184,6 @@ function Autoult()
 end
 
 function CastQ2()
-    print("AA Reset")
     CastSpell(0)
 end
 
