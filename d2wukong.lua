@@ -7,7 +7,7 @@ local Hydra = false
 local SAC = false
 local selectedTar = nil
 local VP = nil
-local version = 1.6
+local version = 1.7
 local AUTOUPDATE = true
 local SCRIPT_NAME = "d2wukong"
 local selectedTar = nil
@@ -49,7 +49,7 @@ end
 
 function vars()
     ts = TargetSelector(TARGET_LESS_CAST_PRIORITY,315)
-    m = scriptConfig("[D2 Wukong v1.6]", "d2wukong")
+    m = scriptConfig("[D2 Wukong v1.7]", "d2wukong")
     orb = SxOrb
     if SX then orb:RegisterAfterAttackCallback(hydra) end
     Ignite  = (myHero:GetSpellData(SUMMONER_1).name:find("summonerdot") and SUMMONER_1) or (myHero:GetSpellData(SUMMONER_2).name:find("summonerdot") and SUMMONER_2) or nil
