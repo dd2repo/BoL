@@ -6,7 +6,7 @@ require 'VPrediction'
 require 'HPrediction'
 require 'SxOrbWalk'
 
-local version = 1.4
+local version = 1.5
 local AUTOUPDATE = true
 local SCRIPT_NAME = "d2cassiopeia"
 local HWID
@@ -71,7 +71,7 @@ m:addTS(ts)
 m:addSubMenu("Orbwalker", "orbwalk")
 SxOrb:LoadToMenu(m.orbwalk)
 ts.name = "Legit"
-PrintChat ("<font color='#F20000'>[D2 Cassiopeia v1.4] loaded!</font>")
+PrintChat ("<font color='#F20000'>[D2 Cassiopeia v1.5] loaded!</font>")
 end
 
 function OnTick()
@@ -99,7 +99,7 @@ end
 function PoisM(unit)
  return TargetHaveBuff('cassiopeiamiasmapoison', unit)
 end
-
+--[[
 function CastHQ(unit)
 	local QPos, QHitChance = HPred:GetPredict("Q", unit, myHero)
 	if QHitChance >= 2 then
@@ -113,7 +113,7 @@ function CastHW(unit)
 		CastSpell(_W, WPos.x, WPos.z)
 	end
 end
-
+]]
 function CastPreQ(unit)
 	local CastPosition, HitChance, Position = VP:GetCircularCastPosition(unit, 0.5, 90, 925, 1800, myHero)
 	if HitChance >= 2 then
@@ -159,16 +159,18 @@ function autokill()
 end
 
 function Combo()
-	if not target then return
-	end   
+	--if not target then SxOrb:EnableAttacks() end
+	--if myHero.mana < GetSpellData(_E).mana then SxOrb:EnableAttacks() end
 	if m.combokey then
+		--[[
 		if myHero:GetSpellData(_E).level >= 1 then
 			if myHero:GetSpellData(_E).currentCd > 0.6 then SxOrb:EnableAttacks()
 			else SxOrb:DisableAttacks()
 			end
 		else SxOrb:EnableAttacks()
 		end
-		if m.prediction == 1 then
+		]]
+		if m.prediction == 1 or m.prediction == 2 then
 			if Qready and m.combosettings.useq and target then
 				CastPreQ(target)
 		  	end
