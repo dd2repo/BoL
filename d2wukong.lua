@@ -7,7 +7,7 @@ local Hydra = false
 local SAC = false
 local selectedTar = nil
 local VP = nil
-local version = 1.7
+local version = 1.8
 local AUTOUPDATE = true
 local SCRIPT_NAME = "d2wukong"
 local selectedTar = nil
@@ -49,11 +49,11 @@ end
 
 function vars()
     ts = TargetSelector(TARGET_LESS_CAST_PRIORITY,315)
-    m = scriptConfig("[D2 Wukong v1.7]", "d2wukong")
+    m = scriptConfig("[D2 Wukong v1.8]", "d2wukong")
     orb = SxOrb
     if SX then orb:RegisterAfterAttackCallback(hydra) end
     Ignite  = (myHero:GetSpellData(SUMMONER_1).name:find("summonerdot") and SUMMONER_1) or (myHero:GetSpellData(SUMMONER_2).name:find("summonerdot") and SUMMONER_2) or nil
-    PrintChat ("<font color='#00BCFF'>[D2 Wukong v1.1] loaded!</font>")
+    PrintChat ("<font color='#00BCFF'>[D2 Wukong v1.8] loaded!</font>")
 end
 
 
@@ -116,6 +116,16 @@ function OnLoseBuff(unit, buff)
     end
 end
 
+function OnRecvPacket(p)
+    if VIP_USER then
+        if p:DecodeF() == myHero.networkID then
+            if p.header == 178 then
+            usingult = true
+            end
+        end
+    end
+end
+
 function OnCreateObj(object)
     if object.name == 'MonkeyKing_Base_R_Cas_Glow.troy' then
         usingult2 = true
@@ -135,7 +145,6 @@ function OnDeleteObj(object)
 end
 
 function OnTick()
-
 checks()
 Killsteal()
 CastQ()
@@ -184,19 +193,21 @@ function Autoult()
 end
 
 function CastQ2()
-    CastSpell(0)
+    if Qready and ValidTarget(target) and m.combokey then
+        CastSpell(0)
+    end
 end
 
 function hydra()
-    if m.combokey and target and ValidTarget(target, 200) and GetDistance(target) <= 200 and Hready then CastSpell(Hydra)
+    if m.combokey and target and ValidTarget(target, 200) and Hready then CastSpell(Hydra)
     end
 end
 
 function CastQ()
     if not (usingult or usingult2 or usingult3) then
-        if m.combokey and Qready and m.combosettings.useq and target and ValidTarget(target, 290) and GetDistance(target) <= 290 and not m.combosettings.useqaa then
+        if m.combokey and Qready and m.combosettings.useq and target and ValidTarget(target, 290) and not m.combosettings.useqaa then
             CastSpell(_Q)
-        elseif m.combosettings.useqaa and Qready and m.combosettings.useq and target and m.combokey then
+        elseif m.combosettings.useqaa then
             if _G.Reborn_Initialised and SAC then 
                 _G.AutoCarry.Plugins:RegisterOnAttacked(CastQ2)
             end
