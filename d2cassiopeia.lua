@@ -6,7 +6,7 @@ require 'VPrediction'
 require 'HPrediction'
 require 'SxOrbWalk'
 
-local version = 1.5
+local version = 1.6
 local AUTOUPDATE = true
 local SCRIPT_NAME = "d2cassiopeia"
 local HWID
@@ -93,11 +93,11 @@ target = ts.target
 end
    
 function PoisN(unit)
- return TargetHaveBuff('cassiopeianoxiousblastpoison', unit)
+ return TargetHaveBuff('cassiopeiaqdebuff', unit)
 end
 
 function PoisM(unit)
- return TargetHaveBuff('cassiopeiamiasmapoison', unit)
+ return TargetHaveBuff('cassiopeiawposion', unit)
 end
 --[[
 function CastHQ(unit)
