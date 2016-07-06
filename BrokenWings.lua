@@ -16,7 +16,6 @@ Small Broken Wings Guide:
 
 -> Left click a minion to perform fast q>aa, w, e on this minion
 -> Use harrass mode to attack under the tower and e back to tank the tower shot (boxboxstyle)
--> "Force R" will use R in your next combo
 -> Use other orbwalkers only for farm. DISABLE ITEM USAGE FROM ALL OTHER SCRIPTS
 
 ]]
