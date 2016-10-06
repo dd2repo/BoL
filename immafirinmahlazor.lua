@@ -200,10 +200,10 @@ end
 
 function OnCreateObj(object)
 	if obj and unit then
-	    if object.name:find("Lux_Base_E_tar_aoe_green") or obj.name:find("LuxLightstrike_tar_green") or obj.name:find("Lux_Base_E_mis.troy") then
+	    if obj.name:find("Lux_Base_E_tar_aoe_green") or obj.name:find("LuxLightstrike_tar_green") or obj.name:find("Lux_Base_E_mis.troy") then
 	        EObject = object
 	    end
-	    if object.name:find("TeleportHome") and GetDistance(object)<100 then
+	    if (string.find(obj.name,"TeleportHome") or string.find(obj.name,"Recall")) and GetDistance(object)<100 then
 	        recalling = true
 	    end
 	end
@@ -214,7 +214,7 @@ function OnDeleteObj(object)
 	    if object.name:find("Lux_Base_E_tar_aoe_green") or obj.name:find("LuxLightstrike_tar_green") or obj.name:find("Lux_Base_E_mis.troy") then
 	        EObject = nil
 	    end
-	    if object.name:find("TeleportHome") and GetDistance(object)<100 then
+	    if (string.find(obj.name,"TeleportHome") or string.find(obj.name,"Recall")) and GetDistance(object)<100 then
 	        recalling = false
 	    end
 	end
