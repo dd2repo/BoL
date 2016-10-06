@@ -1,6 +1,6 @@
 --[[
 Scriptname 	= Noscope Nidalee Reborn
-Version 	= 2.0
+Version 	= 2.1
 Author		= DeadDevil2
 
 ToDo
@@ -13,7 +13,7 @@ return
 end
 
 local ignite = nil
-local version = 2.0
+local version = 2.1
 local AUTOUPDATE = true
 local SX = false
 local SAC = false
@@ -153,7 +153,6 @@ function menu()
 	m.c:addParam("usecw", "Use Cougar W", SCRIPT_PARAM_ONOFF, true)
 	m.c:addParam("usece", "Use Cougar E", SCRIPT_PARAM_ONOFF, true)
 	m.c:addParam("autocougar", "Switch to Cougar if Creep is Hunted", SCRIPT_PARAM_ONOFF, false)
-
 
 	m:addSubMenu("NNR - [Misc Manager]", "vip")
 	m.vip:addParam("pretype", "--- Spear Prediction ---", 5, "")
@@ -352,7 +351,7 @@ function JungleClear()
 				end
 			end
 			if minion900 then
-				if Wready and m.combosettings.humancombo.usehw then
+				if Wready and m.c.usecw then
 					CastSpell(_W, minion900 .x, minion900 .z)
 				end 
 			end
