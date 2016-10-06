@@ -11,7 +11,7 @@ ToDo
 if myHero.charName ~= "Lux" then return end
 
 local ignite = nil
-local version = 1.5
+local version = 1.6
 local AUTOUPDATE = true
 local SX = false
 local SAC = false
