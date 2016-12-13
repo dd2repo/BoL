@@ -1,6 +1,6 @@
 --[[
 Scriptname 	= Noscope Nidalee Reborn
-Version 	= 2.1
+Version 	= 2.3
 Author		= DeadDevil2
 
 ToDo
@@ -13,7 +13,7 @@ return
 end
 
 local ignite = nil
-local version = 2.1
+local version = 2.3
 local AUTOUPDATE = true
 local SX = false
 local SAC = false
@@ -374,8 +374,8 @@ end
 ]]
 
 function OnIssueOrder(source, order, position, target)
-	if SAC == true then
-		if _G.AutoCarry.Keys.AutoCarry and source.isMe and order == 3 then -- 2 = move, 3 = attack
+	if (SAC == true) or (SX == true ) then
+		if (_G.AutoCarry.Keys.AutoCarry or m.key.combokey) and source.isMe and order == 3 then -- 2 = move, 3 = attack
 			if GetDistance(position) - target.boundingRadius < myHero.range + myHero.boundingRadius then -- Check that they are in our AA range
 				CastSpell(_Q) -- This will cast before the "order" is actually sent to the server
 			end
